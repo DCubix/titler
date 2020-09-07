@@ -24,6 +24,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -34,6 +35,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>titler.Program</StartupObject>
@@ -42,6 +44,9 @@
     <Reference Include="NDILibDotNet2, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\SDKs\NDI 4 SDK\Examples\C#\NDILibDotNet2\obj\Release\NDILibDotNet2.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -65,6 +70,12 @@
       <DependentUpon>DesignerForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Core\NDI.cs" />
+    <Compile Include="PlayoutForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PlayoutForm.Designer.cs">
+      <DependentUpon>PlayoutForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Titler\Element.cs" />
@@ -109,6 +120,9 @@
     </Compile>
     <EmbeddedResource Include="DesignerForm.resx">
       <DependentUpon>DesignerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PlayoutForm.resx">
+      <DependentUpon>PlayoutForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -168,6 +182,15 @@
     <Content Include="Processing.NDI.Lib.x86.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\control_play_blue1.png" />
+    <None Include="Resources\delete2.png" />
+    <None Include="Resources\disk2.png" />
+    <None Include="Resources\disk1.png" />
+    <None Include="Resources\save_as.png" />
+    <None Include="Resources\disk.png" />
+    <None Include="Resources\folder_vertical_open.png" />
+    <None Include="Resources\page_white.png" />
+    <None Include="Resources\document_yellow.png" />
     <None Include="Resources\image.png" />
     <None Include="Resources\shape_square.png" />
     <None Include="Resources\layer_shape_text.png" />

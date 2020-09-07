@@ -59,12 +59,14 @@ namespace titler.UI {
 				btFill.Text = ColorTranslator.ToHtml(element.Fill).ToLower();
 				btFill.ForeColor = Color.FromArgb(255, 255 - element.Fill.R, 255 - element.Fill.G, 255 - element.Fill.B);
 				Viewer.Invalidate();
+				Viewer.TriggerDataChange();
 			}
 		}
 
 		private void txText_TextChanged(object sender, EventArgs e) {
 			element.Text = txText.Text;
 			Viewer.Invalidate();
+			Viewer.TriggerDataChange();
 		}
 
 		private void btSelectFont_Click(object sender, EventArgs e) {
@@ -74,6 +76,7 @@ namespace titler.UI {
 				btSelectFont.Text = btSelectFont.Font.Name + ", " + fd.Font.SizeInPoints + "pt";
 				element.Font = fd.Font;
 				Viewer.Invalidate();
+				Viewer.TriggerDataChange();
 			}
 		}
 
@@ -81,6 +84,7 @@ namespace titler.UI {
 			if (lockCombo) return;
 			element.VerticalAlign = Enum.GetValues(typeof(Alignment)).Cast<Alignment>().ToArray()[cbVAlign.SelectedIndex];
 			Viewer.Invalidate();
+			Viewer.TriggerDataChange();
 		}
 
 		private void cbHAlign_SelectedIndexChanged(object sender, EventArgs e) {
@@ -102,15 +106,24 @@ namespace titler.UI {
 		private void VarTextClick(object sender, EventArgs e) {
 			var it = (sender as MenuItem);
 			Title.LinkVariable(Element, it.Text, "Text");
+			Viewer.TriggerDataChange();
 		}
 
 		private void ClearTextClick(object sender, EventArgs e) {
 			Title.UnlinkVariable(Element, "Text");
+			Viewer.TriggerDataChange();
 		}
 
 		private void ckAutoSize_CheckedChanged(object sender, EventArgs e) {
 			element.AutoSize = ckAutoSize.Checked;
 			Viewer.Invalidate();
+			Viewer.TriggerDataChange();
+		}
+
+		private void txText_KeyPress(object sender, KeyPressEventArgs e) {
+			element.Text = txText.Text;
+			Viewer.Invalidate();
+			Viewer.TriggerDataChange();
 		}
 	}
 }

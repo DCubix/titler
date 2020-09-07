@@ -51,12 +51,14 @@ namespace titler.UI {
 				btFill.Text = ColorTranslator.ToHtml(element.Fill).ToLower();
 				btFill.ForeColor = Color.FromArgb(255, 255 - element.Fill.R, 255 - element.Fill.G, 255 - element.Fill.B);
 				Viewer.Invalidate();
+				Viewer.TriggerDataChange();
 			}
 		}
 
 		private void nuRTL_ValueChanged(object sender, EventArgs e) {
 			element.BorderRadius = (int) nuRadius.Value;
 			Viewer.Invalidate();
+			Viewer.TriggerDataChange();
 		}
 
 		private void label7_Click(object sender, EventArgs e) {
@@ -69,6 +71,7 @@ namespace titler.UI {
 			else
 				element.EdgeFilter &= ~RectangleEdgeFilter.TopLeft;
 			Viewer.Invalidate();
+			Viewer.TriggerDataChange();
 		}
 
 		private void ckRTR_CheckedChanged(object sender, EventArgs e) {
@@ -77,6 +80,7 @@ namespace titler.UI {
 			else
 				element.EdgeFilter &= ~RectangleEdgeFilter.TopRight;
 			Viewer.Invalidate();
+			Viewer.TriggerDataChange();
 		}
 
 		private void ckRBL_CheckedChanged(object sender, EventArgs e) {
@@ -85,6 +89,7 @@ namespace titler.UI {
 			else
 				element.EdgeFilter &= ~RectangleEdgeFilter.BottomLeft;
 			Viewer.Invalidate();
+			Viewer.TriggerDataChange();
 		}
 
 		private void ckRBR_CheckedChanged(object sender, EventArgs e) {
@@ -93,6 +98,7 @@ namespace titler.UI {
 			else
 				element.EdgeFilter &= ~RectangleEdgeFilter.BottomRight;
 			Viewer.Invalidate();
+			Viewer.TriggerDataChange();
 		}
 	}
 }

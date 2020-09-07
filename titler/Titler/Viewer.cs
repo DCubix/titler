@@ -16,20 +16,20 @@ namespace titler.Titler {
 		private const int HandleSize = 8;
 		private const int GridSize = 8;
 
-		public Title Title { get; }
+		public Title Title { get; set; }
 
 		private Point p1;
 
-		private bool drag = false;
+		private bool drag = false, keepAspect = false;
 		private int handle = -1;
 
 		public List<Element> Selected { get; }
 
-		public delegate void SelectedEvent(Element el);
-		public event SelectedEvent OnSelected;
-
 		public delegate void ChangeEvent();
 		public event ChangeEvent OnChange;
+
+		public delegate void DataChangeEvent();
+		public event DataChangeEvent OnDataChange;
 
 		public Viewer() {
 			InitializeComponent();
@@ -38,7 +38,11 @@ namespace titler.Titler {
 
 			SetStyle(
 				ControlStyles.AllPaintingInWmPaint | ControlStyles.ResizeRedraw | ControlStyles.OptimizedDoubleBuffer, true
-			);
+			); ;
+		}
+
+		public void TriggerDataChange() {
+			OnDataChange?.Invoke();
 		}
 
 		public void Select(string name) {
@@ -58,9 +62,20 @@ namespace titler.Titler {
 			}
 		}
 
+		protected override void OnKeyDown(KeyEventArgs e) {
+			if ((e.Modifiers & Keys.Shift) == Keys.Shift)
+				keepAspect = true;
+		}
+
+		protected override void OnKeyUp(KeyEventArgs e) {
+			keepAspect = false;
+		}
+
 		protected override void OnMouseDown(MouseEventArgs e) {
 			base.OnMouseDown(e);
 			if (e.Button != MouseButtons.Left) return;
+
+			Focus();
 
 			drag = true;
 			p1 = TransformPoint(e.Location, Title.Resolution, Size);
@@ -90,7 +105,7 @@ namespace titler.Titler {
 
 			if (!hith) {
 				var hitsmth = false;
-				foreach (var el in Title.Elements.Values.Reverse()) {
+				foreach (var el in Title.Elements.Values.OrderBy(o => o.DrawOrder).Reverse()) {
 					if (!el.Visible) continue;
 
 					var sz = el.GetPreferredSize();
@@ -115,7 +130,6 @@ namespace titler.Titler {
 							}
 						}
 
-						OnSelected?.Invoke(Selected[0]);
 						OnChange?.Invoke();
 
 						break;
@@ -166,7 +180,17 @@ namespace titler.Titler {
 					w = Math.Abs(w);
 					h = Math.Abs(h);
 
+					//if (keepAspect) {
+					//	var img = el.GetPreferredSize();
+					//	var rs = (float)w / h;
+					//	var ri = (float)img.Width / img.Height;
+
+					//	w = rs > ri ? (int)(img.Width * ((float)h / img.Height)) : w;
+					//	h = rs > ri ? h : (int)(img.Height * ((float)w / img.Width));
+					//}
+
 					el.Bounds = new Rectangle(x, y, w, h);
+					OnDataChange?.Invoke();
 				}
 
 				p1 = new Point(pt.X, pt.Y);

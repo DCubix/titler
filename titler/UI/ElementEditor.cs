@@ -19,7 +19,6 @@ namespace titler.UI {
 			set {
 				element = value;
 				if (element != null) {
-					UpdateParams();
 				}
 			}
 		}
@@ -29,7 +28,6 @@ namespace titler.UI {
 			set {
 				if (value == null) return;
 				title = value;
-				UpdateParams();
 			}
 		}
 
@@ -39,7 +37,7 @@ namespace titler.UI {
 			InitializeComponent();
 		}
 
-		private void UpdateParams() {
+		public void UpdateParams() {
 			nuX.Value = element.Bounds.X;
 			nuY.Value = element.Bounds.Y;
 			nuW.Value = element.Bounds.Width;
@@ -83,31 +81,37 @@ namespace titler.UI {
 		private void nuX_ValueChanged(object sender, EventArgs e) {
 			element.Bounds = new Rectangle((int)nuX.Value, element.Bounds.Y, element.Bounds.Width, element.Bounds.Height);
 			Viewer.Invalidate();
+			Viewer.TriggerDataChange();
 		}
 
 		private void nuY_ValueChanged(object sender, EventArgs e) {
 			element.Bounds = new Rectangle(element.Bounds.X, (int)nuY.Value, element.Bounds.Width, element.Bounds.Height);
 			Viewer.Invalidate();
+			Viewer.TriggerDataChange();
 		}
 
 		private void nuW_ValueChanged(object sender, EventArgs e) {
 			element.Bounds = new Rectangle(element.Bounds.X, element.Bounds.Y, (int)nuW.Value, element.Bounds.Height);
 			Viewer.Invalidate();
+			Viewer.TriggerDataChange();
 		}
 
 		private void nuH_ValueChanged(object sender, EventArgs e) {
 			element.Bounds = new Rectangle(element.Bounds.X, element.Bounds.Y, element.Bounds.Width, (int)nuH.Value);
 			Viewer.Invalidate();
+			Viewer.TriggerDataChange();
 		}
 
 		private void sbOpacity_Scroll(object sender, ScrollEventArgs e) {
 			element.Opacity = sbOpacity.Value / 1000.0f;
 			Viewer.Invalidate();
+			Viewer.TriggerDataChange();
 		}
 
 		private void ckVisible_CheckedChanged(object sender, EventArgs e) {
 			element.Visible = ckVisible.Checked;
 			Viewer.Invalidate();
+			Viewer.TriggerDataChange();
 		}
 
 		private void cbElements_SelectedIndexChanged(object sender, EventArgs e) {
@@ -117,6 +121,7 @@ namespace titler.UI {
 			else
 				element.Clipper = null;
 			Viewer.Invalidate();
+			Viewer.TriggerDataChange();
 		}
 
 		private void btReset_Click(object sender, EventArgs e) {
@@ -126,6 +131,7 @@ namespace titler.UI {
 			element.Clipper = null;
 			cbClipper.Tag = null;
 			Viewer.Invalidate();
+			Viewer.TriggerDataChange();
 		}
 
 		private void btResetFit_Click(object sender, EventArgs e) {
@@ -135,6 +141,7 @@ namespace titler.UI {
 			element.AutoFit = null;
 			cbFit.Tag = null;
 			Viewer.Invalidate();
+			Viewer.TriggerDataChange();
 		}
 
 		private void cbFit_SelectedIndexChanged(object sender, EventArgs e) {
@@ -144,26 +151,31 @@ namespace titler.UI {
 			else
 				element.AutoFit = null;
 			Viewer.Invalidate();
+			Viewer.TriggerDataChange();
 		}
 
 		private void nuML_ValueChanged(object sender, EventArgs e) {
 			element.Margin[0] = (int) nuML.Value;
 			Viewer.Invalidate();
+			Viewer.TriggerDataChange();
 		}
 
 		private void nuMR_ValueChanged(object sender, EventArgs e) {
 			element.Margin[2] = (int)nuMR.Value;
 			Viewer.Invalidate();
+			Viewer.TriggerDataChange();
 		}
 
 		private void nuMB_ValueChanged(object sender, EventArgs e) {
 			element.Margin[3] = (int)nuMB.Value;
 			Viewer.Invalidate();
+			Viewer.TriggerDataChange();
 		}
 
 		private void nuMT_ValueChanged(object sender, EventArgs e) {
 			element.Margin[1] = (int)nuMT.Value;
 			Viewer.Invalidate();
+			Viewer.TriggerDataChange();
 		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using Plasmoid.Extensions;
+﻿using Newtonsoft.Json.Linq;
+using Plasmoid.Extensions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,10 +9,12 @@ using System.Drawing;
 using System.Drawing.Design;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using titler.Core;
 
 namespace titler.Titler {
@@ -72,6 +75,21 @@ namespace titler.Titler {
 			Reverse = false;
 		}
 
+		public virtual JObject ToJson() {
+			JObject ob = new JObject();
+			ob["delay"] = Delay;
+			ob["duration"] = Duration;
+			ob["easing"] = (int)EasingFunction;
+			return ob;
+		}
+
+		public virtual Animation FromJson(JObject ob) {
+			Delay = ob["delay"].Value<float>();
+			Duration = ob["duration"].Value<float>();
+			EasingFunction = (Easing)ob["easing"].Value<int>();
+			return this;
+		}
+
 		public void Play(bool reverse) {
 			Time = 0.0f;
 			State = AnimationState.Waiting;
@@ -114,9 +132,14 @@ namespace titler.Titler {
 
 		public float TargetOpacity { get; set; }
 		public float Opacity { get; set; }
+
+		public float TargetZoom { get; set; }
+		public float Zoom { get; set; }
 	}
 
 	public abstract class Element {
+		public const float MaxZoom = 0.2f;
+
 		public Element AutoFit { get; set; }
 		public Element Clipper { get; set; }
 
@@ -165,6 +188,8 @@ namespace titler.Titler {
 			props.TargetBounds = new Rectangle(Bounds.X, Bounds.Y, sz.Width, sz.Height);
 			props.Opacity = Opacity;
 			props.TargetOpacity = Opacity;
+			props.TargetZoom = MaxZoom;
+			props.Zoom = 0.0f;
 		}
 
 		public virtual GraphicsPath GetClipPath(Graphics ctx, Rectangle bounds) {
@@ -172,6 +197,62 @@ namespace titler.Titler {
 			var gp = new GraphicsPath();
 			gp.AddRectangle(bounds);
 			return gp;
+		}
+
+		public virtual JObject ToJson() {
+			JObject ob = new JObject();
+			ob["bounds"] = new JArray(Bounds.X, Bounds.Y, Bounds.Width, Bounds.Height);
+			ob["margin"] = new JArray(Margin);
+			ob["drawOrder"] = DrawOrder;
+			ob["opacity"] = Opacity;
+			ob["visible"] = Visible;
+			if (InAnimation != null)
+				ob["in"] = InAnimation.ToJson();
+			if (OutAnimation != null)
+				ob["out"] = OutAnimation.ToJson();
+			return ob;
+		}
+
+		public virtual Element FromJson(JObject ob) {
+			Bounds = new Rectangle(
+				ob["bounds"][0].Value<int>(),
+				ob["bounds"][1].Value<int>(),
+				ob["bounds"][2].Value<int>(),
+				ob["bounds"][3].Value<int>()
+			);
+			Margin[0] = ob["margin"][0].Value<int>();
+			Margin[1] = ob["margin"][1].Value<int>();
+			Margin[2] = ob["margin"][2].Value<int>();
+			Margin[3] = ob["margin"][3].Value<int>();
+			DrawOrder = ob["drawOrder"].Value<int>();
+			Opacity = ob["opacity"].Value<float>();
+			Visible = ob["visible"].Value<bool>();
+
+			if (ob.ContainsKey("in")) {
+				JObject ani = (JObject)ob["in"];
+				var type = (string) ani["type"];
+				var ael = type switch
+				{
+					"Fade" => new Fade().FromJson(ani),
+					"Reveal" => new Reveal().FromJson(ani),
+					_ => null
+				};
+				InAnimation = ael;
+			}
+
+			if (ob.ContainsKey("out")) {
+				JObject ani = (JObject)ob["out"];
+				var type = (string)ani["type"];
+				var ael = type switch
+				{
+					"Fade" => new Fade().FromJson(ani),
+					"Reveal" => new Reveal().FromJson(ani),
+					_ => null
+				};
+				OutAnimation = ael;
+			}
+
+			return this;
 		}
 
 		public void Show() {
@@ -244,6 +325,19 @@ namespace titler.Titler {
 	public class Reveal : Animation {
 		public RevealDirection Direction { get; set; } = RevealDirection.FromLeft;
 
+		public override JObject ToJson() {
+			var ob = base.ToJson();
+			ob["type"] = "Reveal";
+			ob["direction"] = (int)Direction;
+			return ob;
+		}
+
+		public override Animation FromJson(JObject ob) {
+			var el = base.FromJson(ob) as Reveal;
+			el.Direction = (RevealDirection) ob["direction"].Value<int>();
+			return el;
+		}
+
 		public override void Apply(ref AnimatableProperties props) {
 			var bounds = props.TargetBounds;
 			var b = new Rectangle(bounds.X, bounds.Y, bounds.Width, bounds.Height);
@@ -283,6 +377,19 @@ namespace titler.Titler {
 	public class Fade : Animation {
 		public FadeDirection Direction { get; set; } = FadeDirection.In;
 
+		public override JObject ToJson() {
+			var ob = base.ToJson();
+			ob["type"] = "Fade";
+			ob["direction"] = (int)Direction;
+			return ob;
+		}
+
+		public override Animation FromJson(JObject ob) {
+			var el = base.FromJson(ob) as Fade;
+			el.Direction = (FadeDirection)ob["direction"].Value<int>();
+			return el;
+		}
+
 		public override void Apply(ref AnimatableProperties props) {
 			if (Direction == FadeDirection.In) {
 				props.Opacity = (float)MathUtil.Lerp(0.0f, props.TargetOpacity, Value);
@@ -301,6 +408,28 @@ namespace titler.Titler {
 		public override GraphicsPath GetClipPath(Graphics ctx, Rectangle bounds) {
 			if (bounds.IsEmpty) return base.GetClipPath(ctx, bounds);
 			return GraphicsExtension.GenerateRoundedRectangle(ctx, bounds, BorderRadius, EdgeFilter);
+		}
+
+		public override JObject ToJson() {
+			var ob = base.ToJson();
+			ob["type"] = "RectangleElement";
+			ob["fill"] = new JArray(Fill.R, Fill.G, Fill.B, Fill.A);
+			ob["borderRadius"] = BorderRadius;
+			ob["edgeFilter"] = (int)EdgeFilter;
+			return ob;
+		}
+
+		public override Element FromJson(JObject ob) {
+			var el = base.FromJson(ob) as RectangleElement;
+			el.Fill = Color.FromArgb(
+				ob["fill"][3].Value<int>(),
+				ob["fill"][0].Value<int>(),
+				ob["fill"][1].Value<int>(),
+				ob["fill"][2].Value<int>()
+			);
+			el.BorderRadius = ob["borderRadius"].Value<int>();
+			el.EdgeFilter = (RectangleEdgeFilter) ob["edgeFilter"].Value<int>();
+			return el;
 		}
 
 		public override void Render(Graphics ctx, float dt) {
@@ -342,7 +471,6 @@ namespace titler.Titler {
 			}
 
 			ctx.Clip = clip;
-
 			ctx.FillRoundedRectangle(sb, Bounds, BorderRadius, EdgeFilter);
 
 			ctx.Restore(state);
@@ -373,6 +501,38 @@ namespace titler.Titler {
 		public bool AutoSize { get; set; } = false;
 
 		private Size preferredSize = new Size();
+
+		public override JObject ToJson() {
+			var ob = base.ToJson();
+			ob["type"] = "TextElement";
+			ob["fill"] = new JArray(Fill.R, Fill.G, Fill.B, Fill.A);
+			ob["font"] = new JArray(Font.FontFamily.Name, Font.Size, (int)Font.Style);
+			ob["halign"] = (int)HorizontalAlign;
+			ob["valign"] = (int)VerticalAlign;
+			ob["autoSize"] = AutoSize;
+			ob["text"] = Text;
+			return ob;
+		}
+
+		public override Element FromJson(JObject ob) {
+			var el = base.FromJson(ob) as TextElement;
+			el.Fill = Color.FromArgb(
+				ob["fill"][3].Value<int>(),
+				ob["fill"][0].Value<int>(),
+				ob["fill"][1].Value<int>(),
+				ob["fill"][2].Value<int>()
+			);
+			el.Font = new Font(
+				ob["font"][0].Value<string>(),
+				ob["font"][1].Value<float>(),
+				(FontStyle) ob["font"][2].Value<int>()
+			);
+			el.HorizontalAlign = (Alignment)ob["halign"].Value<int>();
+			el.VerticalAlign = (Alignment)ob["valign"].Value<int>();
+			el.AutoSize = ob["autoSize"].Value<bool>();
+			el.Text = ob["text"].Value<string>();
+			return el;
+		}
 
 		public override Size GetPreferredSize() {
 			return AutoSize ? preferredSize : base.GetPreferredSize();
@@ -510,9 +670,45 @@ namespace titler.Titler {
 			}
 		}
 		public Rectangle Source { get; set; }
+		public string Path { get; set; } = "";
 
 		public ImageElement() : base() {
 			Source = new Rectangle(0, 0, 1, 1);
+		}
+
+		public override JObject ToJson() {
+			var ob = base.ToJson();
+			ob["type"] = "ImageElement";
+			ob["source"] = new JArray(Source.X, Source.Y, Source.Width, Source.Height);
+			ob["path"] = Path;
+			return ob;
+		}
+
+		public override Element FromJson(JObject ob) {
+			var el = base.FromJson(ob) as ImageElement;
+			var path = ob["path"].Value<string>();
+			if (!File.Exists(path)) {
+				if (MessageBox.Show("The file \"" + path + "\" doesn't exist. Do you want to search for it?", "Warning") == DialogResult.Yes) {
+					using (var ofd = new OpenFileDialog()) {
+						ofd.Filter = "Images (*.jpg,*.jpeg,*.png,*.bmp) | *.jpg;*.jpeg;*.png;*.bmp";
+						ofd.Title = "Open Image";
+						if (ofd.ShowDialog() == DialogResult.OK) {
+							path = ofd.FileName;
+						}
+					}
+				} else {
+					path = "";
+				}
+			}
+			el.Path = path;
+			el.Image = new Bitmap(path);
+			el.Source = new Rectangle(
+				ob["source"][0].Value<int>(),
+				ob["source"][1].Value<int>(),
+				ob["source"][2].Value<int>(),
+				ob["source"][3].Value<int>()
+			);
+			return el;
 		}
 
 		public override void Render(Graphics ctx, float dt) {

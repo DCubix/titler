@@ -1,10 +1,14 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Management.Instrumentation;
 using System.Reflection;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -144,6 +148,142 @@ namespace titler.Titler {
 				var st = ctx.Save();
 				el.RenderAll(ctx, dt);
 				ctx.Restore(st);
+			}
+		}
+
+		public Bitmap GetPreview() {
+			using (var bmp = new Bitmap(Resolution.Width, Resolution.Height))
+			using (var g = Graphics.FromImage(bmp))
+			{
+				var state = g.Save();
+				var cols = (Resolution.Width + 16) / 16;
+				var rows = (Resolution.Height + 16) / 16;
+				g.FillRectangle(Brushes.White, new Rectangle(Point.Empty, Resolution));
+				for (var c = 0; c < cols; c++) {
+					for (var r = 0; r < rows; r++) {
+						if (r % 2 == 0 && c % 2 == 1 || r % 2 == 1 && c % 2 == 0) {
+							g.FillRectangle(Brushes.LightGray, new Rectangle(c * 16, r * 16, 16, 16));
+						}
+					}
+				}
+				g.Restore(state);
+
+				Render(g, 0.0f);
+				return bmp;
+			}
+		}
+
+		public void LoadFromFile(string fileName) {
+			JObject ob = JObject.Parse(File.ReadAllText(fileName));
+
+			if (ob.ContainsKey("resolution")) {
+				Resolution = new Size(
+					(int)ob["resolution"][0],
+					(int)ob["resolution"][1]
+				);
+			}
+
+			// Read elements
+			JArray elems = (JArray)ob["elements"];
+			foreach (var job in elems.Cast<JObject>()) {
+				var type = (string)job["type"];
+				Element el = type switch
+				{
+					"RectangleElement" => new RectangleElement().FromJson(job),
+					"TextElement" => new TextElement().FromJson(job),
+					"ImageElement" => new ImageElement().FromJson(job),
+					_ => null
+				};
+
+				if (el == null) continue;
+				AddElement((string)job["name"], el);
+			}
+
+			// Read clippers and autofitters
+			JArray links = (JArray)ob["links"];
+			foreach (var job in links.Cast<JObject>()) {
+				var efor = GetElement((string)job["for"]);
+				var el = GetElement((string)job["element"]);
+				var type = (string)job["type"];
+				if (type == "Clipper") {
+					efor.Clipper = el;
+				} else if (type == "AutoFit") {
+					efor.AutoFit = el;
+				}
+			}
+
+			// Read variables
+			JObject vars = (JObject)ob["variables"];
+			foreach (var ve in vars) {
+				Variables[ve.Key] = "";
+			}
+
+			// Link variables
+			JObject vlinks = (JObject)ob["variableLinks"];
+			foreach (var ve in vlinks) {
+				var lnk = (JObject) ve.Value;
+				var link = new Link();
+				link.Element = GetElement((string)lnk["element"]);
+				link.Property = (string)lnk["property"];
+				VariableLinks[ve.Key] = link;
+			}
+		}
+
+		public void SaveToFile(string fileName) {
+			JObject ob = new JObject();
+
+			// Save elements
+			JArray elems = new JArray();
+			foreach (var e in Elements) {
+				var el = e.Value.ToJson();
+				el["name"] = e.Key;
+				elems.Add(el);
+			}
+
+			// Clippers and AutoFitters
+			JArray links = new JArray();
+			foreach (var e in Elements) {
+				if (e.Value.Clipper == null) continue;
+				var lnk = new JObject();
+				lnk["type"] = "Clipper";
+				lnk["for"] = GetName(e.Value);
+				lnk["element"] = GetName(e.Value.Clipper);
+				links.Add(lnk);
+			}
+
+			foreach (var e in Elements) {
+				if (e.Value.AutoFit == null) continue;
+				var lnk = new JObject();
+				lnk["type"] = "AutoFit";
+				lnk["for"] = GetName(e.Value);
+				lnk["element"] = GetName(e.Value.AutoFit);
+				links.Add(lnk);
+			}
+
+			// Variables
+			JObject vars = new JObject();
+			foreach (var e in Variables) {
+				vars[e.Key] = e.Value;
+			}
+
+			// Variable Links
+			JObject vlinks = new JObject();
+			foreach (var e in VariableLinks) {
+				var lnk = new JObject();
+				lnk["element"] = GetName(e.Value.Element);
+				lnk["property"] = e.Value.Property;
+				vlinks[e.Key] = lnk;
+			}
+
+			// Assemble
+			ob["elements"] = elems;
+			ob["links"] = links;
+			ob["variables"] = vars;
+			ob["variableLinks"] = vlinks;
+			ob["resolution"] = new JArray(Resolution.Width, Resolution.Height);
+
+			using (var sw = new StreamWriter(fileName)) {
+				sw.Write(ob.ToString(Newtonsoft.Json.Formatting.Indented));
 			}
 		}
 	}

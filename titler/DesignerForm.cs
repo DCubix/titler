@@ -17,6 +17,9 @@ namespace titler {
 		private int playAnimState = -1;
 		private string nameTemp = "";
 
+		private bool saved = true;
+		private string fileName = "";
+
 		public DesignerForm() {
 			InitializeComponent();
 
@@ -83,7 +86,7 @@ namespace titler {
 		}
 
 		private void Form1_Load(object sender, EventArgs e) {
-			vwCanvas.OnSelected += VwCanvas_OnSelected;
+			vwCanvas.OnDataChange += VwCanvas_OnDataChange;
 			vwCanvas.OnChange += VwCanvas_OnChange;
 
 			lstVars.Items.Clear();
@@ -92,14 +95,23 @@ namespace titler {
 			}
 
 			RebuildElementList();
+			UpdateFormTitle();
+		}
+
+		private void VwCanvas_OnDataChange() {
+			saved = false;
+			UpdateFormTitle();
 		}
 
 		private void VwCanvas_OnChange() {
-			if (tbTools.SelectedIndex != 1) return;
-
+			lsElements.SelectedItems.Clear();
 			foreach (var el in vwCanvas.Selected) {
-				
+				var lit = lsElements.FindItemWithText(vwCanvas.Title.GetName(el));
+				if (lit != null) {
+					lit.Selected = true;
+				}
 			}
+			lsElements.Select();
 
 			elementEdit.Visible = vwCanvas.Selected.Count > 0;
 			gpIn.Visible = vwCanvas.Selected.Count > 0;
@@ -108,20 +120,22 @@ namespace titler {
 			if (vwCanvas.Selected.Count > 0) {
 				elementEdit.Title = vwCanvas.Title;
 				elementEdit.Element = vwCanvas.Selected[0];
+				elementEdit.UpdateParams();
 
 				rectangleEdit.Visible = (vwCanvas.Selected[0] is RectangleElement);
-				if (rectangleEdit.Visible) {
+				textEdit.Visible = (vwCanvas.Selected[0] is TextElement);
+				imageEdit.Visible = (vwCanvas.Selected[0] is ImageElement);
+
+				if ((vwCanvas.Selected[0] is RectangleElement)) {
 					rectangleEdit.Element = vwCanvas.Selected[0] as RectangleElement;
 				}
 
-				textEdit.Visible = (vwCanvas.Selected[0] is TextElement);
-				if (textEdit.Visible) {
+				if ((vwCanvas.Selected[0] is TextElement)) {
 					textEdit.Title = vwCanvas.Title;
 					textEdit.Element = vwCanvas.Selected[0] as TextElement;
 				}
 
-				imageEdit.Visible = (vwCanvas.Selected[0] is ImageElement);
-				if (imageEdit.Visible) {
+				if ((vwCanvas.Selected[0] is ImageElement)) {
 					imageEdit.Element = vwCanvas.Selected[0] as ImageElement;
 				}
 
@@ -137,16 +151,13 @@ namespace titler {
 			}
 		}
 
-		private void VwCanvas_OnSelected(Element el) {
-			elementEdit.Element = el;
-		}
-
 		private void Form1_FormClosing(object sender, FormClosingEventArgs e) {
 			
 		}
 
 		private void pgProps_PropertyValueChanged(object s, PropertyValueChangedEventArgs e) {
 			vwCanvas.Invalidate();
+			UpdateFormTitle();
 		}
 
 		private void btPreview_Click(object sender, EventArgs e) {
@@ -275,7 +286,9 @@ namespace titler {
 		}
 
 		private void pgTitle_PropertyValueChanged(object s, PropertyValueChangedEventArgs e) {
+			saved = false;
 			vwCanvas.Invalidate();
+			UpdateFormTitle();
 		}
 
 		private void btDelete_Click(object sender, EventArgs e) {
@@ -289,11 +302,13 @@ namespace titler {
 				);
 
 				if (res == DialogResult.Yes) {
-					vwCanvas.Select(null);
 					foreach (var el in lsElements.SelectedItems.Cast<ListViewItem>()) {
 						vwCanvas.Title.DeleteElement(el.Text);
 					}
+					vwCanvas.Select(null);
+					saved = false;
 					vwCanvas.Invalidate();
+					UpdateFormTitle();
 					RebuildElementList();
 				}
 			}
@@ -324,7 +339,9 @@ namespace titler {
 					i++;
 				}
 
+				saved = false;
 				vwCanvas.Invalidate();
+				UpdateFormTitle();
 			}
 		}
 
@@ -340,7 +357,9 @@ namespace titler {
 					i++;
 				}
 
+				saved = false;
 				vwCanvas.Invalidate();
+				UpdateFormTitle();
 			}
 		}
 
@@ -361,6 +380,98 @@ namespace titler {
 					sender.Items.Insert(index, item);
 				}
 			}
+		}
+
+		private void btNew_Click(object sender, EventArgs e) {
+			if (!saved) {
+				var res = MessageBox.Show("You have unsaved changes. Do you want to continue?", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+				if (res == DialogResult.Yes) {
+					vwCanvas.Title = new Title();
+					fileName = "";
+				}
+			} else {
+				vwCanvas.Title = new Title();
+				fileName = "";
+			}
+			vwCanvas.Invalidate();
+		}
+
+		private void OpenFile() {
+			using (var ofd = new OpenFileDialog()) {
+				ofd.Filter = "Title Designs (*.tdn)|*.tdn";
+				if (ofd.ShowDialog() == DialogResult.OK) {
+					fileName = ofd.FileName;
+					saved = true;
+					vwCanvas.Title = new Title();
+					vwCanvas.Title.LoadFromFile(fileName);
+
+					lstVars.Items.Clear();
+					foreach (var v in vwCanvas.Title.Variables) {
+						lstVars.Items.Add(new ListViewItem(v.Key));
+					}
+
+					RebuildElementList();
+
+					vwCanvas.Invalidate();
+					UpdateFormTitle();
+				}
+			}
+		}
+
+		private void SaveFile() {
+			using (var ofd = new SaveFileDialog()) {
+				ofd.FileName = fileName;
+				ofd.Filter = "Title Designs (*.tdn)|*.tdn";
+				if (ofd.ShowDialog() == DialogResult.OK) {
+					fileName = ofd.FileName;
+					saved = true;
+					vwCanvas.Title.SaveToFile(fileName);
+					vwCanvas.Invalidate();
+					UpdateFormTitle();
+				}
+			}
+		}
+
+		private void btOpen_Click(object sender, EventArgs e) {
+			if (!saved) {
+				var res = MessageBox.Show("You have unsaved changes. Do you want to continue?", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+				if (res == DialogResult.Yes) {
+					OpenFile();
+				}
+			} else {
+				OpenFile();
+			}
+			vwCanvas.Invalidate();
+			UpdateFormTitle();
+		}
+
+		private void btSave_Click(object sender, EventArgs e) {
+			if (!saved) {
+				if (fileName.Length > 0) {
+					vwCanvas.Title.SaveToFile(fileName);
+					saved = true;
+					vwCanvas.Invalidate();
+					UpdateFormTitle();
+				} else {
+					SaveFile();
+				}
+			}
+		}
+
+		private void btSaveAs_Click(object sender, EventArgs e) {
+			SaveFile();
+		}
+
+		private void UpdateFormTitle() {
+			var txt = Properties.Resources.appName;
+			if (fileName.Length > 0) {
+				txt += " - [" + fileName;
+				if (!saved) {
+					txt += "**";
+				}
+				txt += "]";
+			}
+			Text = txt;
 		}
 
 	}

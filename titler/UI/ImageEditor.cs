@@ -41,30 +41,36 @@ namespace titler.UI {
 		private void nuX_ValueChanged(object sender, EventArgs e) {
 			element.Source = new Rectangle((int)nuX.Value, element.Source.Y, element.Source.Width, element.Source.Height);
 			Viewer.Invalidate();
+			Viewer.TriggerDataChange();
 		}
 
 		private void nuY_ValueChanged(object sender, EventArgs e) {
 			element.Source = new Rectangle(element.Source.X, (int)nuY.Value, element.Source.Width, element.Source.Height);
 			Viewer.Invalidate();
+			Viewer.TriggerDataChange();
 		}
 
 		private void nuW_ValueChanged(object sender, EventArgs e) {
 			element.Source = new Rectangle(element.Source.X, element.Source.Y, (int)nuW.Value, element.Source.Height);
 			Viewer.Invalidate();
+			Viewer.TriggerDataChange();
 		}
 
 		private void nuH_ValueChanged(object sender, EventArgs e) {
 			element.Source = new Rectangle(element.Source.X, element.Source.Y, element.Source.Width, (int)nuH.Value);
 			Viewer.Invalidate();
+			Viewer.TriggerDataChange();
 		}
 
 		private void btOpenImage_Click(object sender, EventArgs e) {
 			using (var ofd = new OpenFileDialog()) {
 				ofd.Filter = "Images (*.jpg,*.jpeg,*.png,*.bmp) | *.jpg;*.jpeg;*.png;*.bmp";
-				ofd.Title = "Abrir Imagem";
+				ofd.Title = "Open Image";
 				if (ofd.ShowDialog() == DialogResult.OK) {
 					element.Image = new Bitmap(ofd.FileName);
+					element.Path = ofd.FileName;
 					Viewer.Invalidate();
+					Viewer.TriggerDataChange();
 				}
 			}
 		}

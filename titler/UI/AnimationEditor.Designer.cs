@@ -62,6 +62,7 @@
 			this.pgProps.Name = "pgProps";
 			this.pgProps.Size = new System.Drawing.Size(273, 293);
 			this.pgProps.TabIndex = 5;
+			this.pgProps.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.pgProps_PropertyValueChanged);
 			// 
 			// btPlayStop
 			// 

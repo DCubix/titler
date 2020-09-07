@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+			titler.Titler.Title title1 = new titler.Titler.Title();
 			this.tbTools = new System.Windows.Forms.TabControl();
 			this.tbTitle = new System.Windows.Forms.TabPage();
 			this.lstVars = new System.Windows.Forms.ListView();
@@ -48,17 +49,22 @@
 			this.btMoveDown = new System.Windows.Forms.ToolStripButton();
 			this.pgTitle = new System.Windows.Forms.PropertyGrid();
 			this.tbProps = new System.Windows.Forms.TabPage();
-			this.tbAnimations = new System.Windows.Forms.TabPage();
-			this.btPreview = new System.Windows.Forms.Button();
-			this.gpOut = new System.Windows.Forms.GroupBox();
-			this.gpIn = new System.Windows.Forms.GroupBox();
-			this.vwCanvas = new titler.Titler.Viewer();
 			this.imageEdit = new titler.UI.ImageEditor();
 			this.textEdit = new titler.UI.TextEditor();
 			this.rectangleEdit = new titler.UI.RectangleElementEditor();
 			this.elementEdit = new titler.UI.ElementEditor();
+			this.tbAnimations = new System.Windows.Forms.TabPage();
+			this.btPreview = new System.Windows.Forms.Button();
+			this.gpOut = new System.Windows.Forms.GroupBox();
 			this.outEditor = new titler.UI.AnimationEditor();
+			this.gpIn = new System.Windows.Forms.GroupBox();
 			this.inEditor = new titler.UI.AnimationEditor();
+			this.toolStrip3 = new System.Windows.Forms.ToolStrip();
+			this.btNew = new System.Windows.Forms.ToolStripButton();
+			this.btOpen = new System.Windows.Forms.ToolStripButton();
+			this.btSave = new System.Windows.Forms.ToolStripButton();
+			this.btSaveAs = new System.Windows.Forms.ToolStripButton();
+			this.vwCanvas = new titler.Titler.Viewer();
 			this.tbTools.SuspendLayout();
 			this.tbTitle.SuspendLayout();
 			this.toolStrip1.SuspendLayout();
@@ -67,6 +73,7 @@
 			this.tbAnimations.SuspendLayout();
 			this.gpOut.SuspendLayout();
 			this.gpIn.SuspendLayout();
+			this.toolStrip3.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// tbTools
@@ -75,10 +82,10 @@
 			this.tbTools.Controls.Add(this.tbProps);
 			this.tbTools.Controls.Add(this.tbAnimations);
 			this.tbTools.Dock = System.Windows.Forms.DockStyle.Right;
-			this.tbTools.Location = new System.Drawing.Point(856, 0);
+			this.tbTools.Location = new System.Drawing.Point(825, 31);
 			this.tbTools.Name = "tbTools";
 			this.tbTools.SelectedIndex = 0;
-			this.tbTools.Size = new System.Drawing.Size(292, 744);
+			this.tbTools.Size = new System.Drawing.Size(323, 713);
 			this.tbTools.TabIndex = 1;
 			// 
 			// tbTitle
@@ -91,7 +98,7 @@
 			this.tbTitle.Location = new System.Drawing.Point(4, 22);
 			this.tbTitle.Name = "tbTitle";
 			this.tbTitle.Padding = new System.Windows.Forms.Padding(3);
-			this.tbTitle.Size = new System.Drawing.Size(284, 718);
+			this.tbTitle.Size = new System.Drawing.Size(315, 687);
 			this.tbTitle.TabIndex = 0;
 			this.tbTitle.Text = "Title";
 			this.tbTitle.UseVisualStyleBackColor = true;
@@ -105,7 +112,7 @@
 			this.lstVars.Location = new System.Drawing.Point(3, 420);
 			this.lstVars.MultiSelect = false;
 			this.lstVars.Name = "lstVars";
-			this.lstVars.Size = new System.Drawing.Size(278, 150);
+			this.lstVars.Size = new System.Drawing.Size(309, 150);
 			this.lstVars.TabIndex = 2;
 			this.lstVars.UseCompatibleStateImageBehavior = false;
 			this.lstVars.View = System.Windows.Forms.View.List;
@@ -122,7 +129,7 @@
             this.btDelVar});
 			this.toolStrip1.Location = new System.Drawing.Point(3, 395);
 			this.toolStrip1.Name = "toolStrip1";
-			this.toolStrip1.Size = new System.Drawing.Size(278, 25);
+			this.toolStrip1.Size = new System.Drawing.Size(309, 25);
 			this.toolStrip1.TabIndex = 1;
 			this.toolStrip1.Text = "toolStrip1";
 			// 
@@ -160,7 +167,7 @@
 			this.lsElements.LabelEdit = true;
 			this.lsElements.Location = new System.Drawing.Point(3, 245);
 			this.lsElements.Name = "lsElements";
-			this.lsElements.Size = new System.Drawing.Size(278, 150);
+			this.lsElements.Size = new System.Drawing.Size(309, 150);
 			this.lsElements.TabIndex = 3;
 			this.lsElements.UseCompatibleStateImageBehavior = false;
 			this.lsElements.View = System.Windows.Forms.View.List;
@@ -181,7 +188,7 @@
             this.btMoveDown});
 			this.toolStrip2.Location = new System.Drawing.Point(3, 220);
 			this.toolStrip2.Name = "toolStrip2";
-			this.toolStrip2.Size = new System.Drawing.Size(278, 25);
+			this.toolStrip2.Size = new System.Drawing.Size(309, 25);
 			this.toolStrip2.TabIndex = 4;
 			this.toolStrip2.Text = "toolStrip2";
 			// 
@@ -209,7 +216,7 @@
 			// 
 			this.btCreateText.Image = global::titler.Properties.Resources.layer_shape_text;
 			this.btCreateText.Name = "btCreateText";
-			this.btCreateText.Size = new System.Drawing.Size(180, 22);
+			this.btCreateText.Size = new System.Drawing.Size(126, 22);
 			this.btCreateText.Text = "Text";
 			this.btCreateText.Click += new System.EventHandler(this.btCreateText_Click);
 			// 
@@ -217,7 +224,7 @@
 			// 
 			this.btCreateRectangle.Image = global::titler.Properties.Resources.shape_square;
 			this.btCreateRectangle.Name = "btCreateRectangle";
-			this.btCreateRectangle.Size = new System.Drawing.Size(180, 22);
+			this.btCreateRectangle.Size = new System.Drawing.Size(126, 22);
 			this.btCreateRectangle.Text = "Rectangle";
 			this.btCreateRectangle.Click += new System.EventHandler(this.btCreateRectangle_Click);
 			// 
@@ -225,7 +232,7 @@
 			// 
 			this.btCreateImage.Image = global::titler.Properties.Resources.image;
 			this.btCreateImage.Name = "btCreateImage";
-			this.btCreateImage.Size = new System.Drawing.Size(180, 22);
+			this.btCreateImage.Size = new System.Drawing.Size(126, 22);
 			this.btCreateImage.Text = "Image";
 			this.btCreateImage.Click += new System.EventHandler(this.btCreateImage_Click);
 			// 
@@ -269,7 +276,7 @@
 			this.pgTitle.Dock = System.Windows.Forms.DockStyle.Top;
 			this.pgTitle.Location = new System.Drawing.Point(3, 3);
 			this.pgTitle.Name = "pgTitle";
-			this.pgTitle.Size = new System.Drawing.Size(278, 217);
+			this.pgTitle.Size = new System.Drawing.Size(309, 217);
 			this.pgTitle.TabIndex = 5;
 			this.pgTitle.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.pgTitle_PropertyValueChanged);
 			// 
@@ -283,69 +290,10 @@
 			this.tbProps.Location = new System.Drawing.Point(4, 22);
 			this.tbProps.Name = "tbProps";
 			this.tbProps.Padding = new System.Windows.Forms.Padding(3);
-			this.tbProps.Size = new System.Drawing.Size(284, 718);
+			this.tbProps.Size = new System.Drawing.Size(284, 687);
 			this.tbProps.TabIndex = 1;
 			this.tbProps.Text = "Properties";
 			this.tbProps.UseVisualStyleBackColor = true;
-			// 
-			// tbAnimations
-			// 
-			this.tbAnimations.Controls.Add(this.btPreview);
-			this.tbAnimations.Controls.Add(this.gpOut);
-			this.tbAnimations.Controls.Add(this.gpIn);
-			this.tbAnimations.Location = new System.Drawing.Point(4, 22);
-			this.tbAnimations.Name = "tbAnimations";
-			this.tbAnimations.Padding = new System.Windows.Forms.Padding(3);
-			this.tbAnimations.Size = new System.Drawing.Size(284, 718);
-			this.tbAnimations.TabIndex = 2;
-			this.tbAnimations.Text = "Animations";
-			this.tbAnimations.UseVisualStyleBackColor = true;
-			// 
-			// btPreview
-			// 
-			this.btPreview.Dock = System.Windows.Forms.DockStyle.Top;
-			this.btPreview.Location = new System.Drawing.Point(3, 635);
-			this.btPreview.Margin = new System.Windows.Forms.Padding(25, 3, 25, 3);
-			this.btPreview.Name = "btPreview";
-			this.btPreview.Size = new System.Drawing.Size(278, 23);
-			this.btPreview.TabIndex = 0;
-			this.btPreview.Tag = "P";
-			this.btPreview.Text = "Preview";
-			this.btPreview.UseVisualStyleBackColor = true;
-			this.btPreview.Click += new System.EventHandler(this.btPreview_Click);
-			// 
-			// gpOut
-			// 
-			this.gpOut.Controls.Add(this.outEditor);
-			this.gpOut.Dock = System.Windows.Forms.DockStyle.Top;
-			this.gpOut.Location = new System.Drawing.Point(3, 319);
-			this.gpOut.Name = "gpOut";
-			this.gpOut.Size = new System.Drawing.Size(278, 316);
-			this.gpOut.TabIndex = 1;
-			this.gpOut.TabStop = false;
-			this.gpOut.Text = "Out";
-			this.gpOut.Visible = false;
-			// 
-			// gpIn
-			// 
-			this.gpIn.Controls.Add(this.inEditor);
-			this.gpIn.Dock = System.Windows.Forms.DockStyle.Top;
-			this.gpIn.Location = new System.Drawing.Point(3, 3);
-			this.gpIn.Name = "gpIn";
-			this.gpIn.Size = new System.Drawing.Size(278, 316);
-			this.gpIn.TabIndex = 0;
-			this.gpIn.TabStop = false;
-			this.gpIn.Text = "In";
-			this.gpIn.Visible = false;
-			// 
-			// vwCanvas
-			// 
-			this.vwCanvas.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.vwCanvas.Location = new System.Drawing.Point(0, 0);
-			this.vwCanvas.Name = "vwCanvas";
-			this.vwCanvas.Size = new System.Drawing.Size(856, 744);
-			this.vwCanvas.TabIndex = 0;
-			this.vwCanvas.Text = "viewer1";
 			// 
 			// imageEdit
 			// 
@@ -405,6 +353,44 @@
 			this.elementEdit.Viewer = null;
 			this.elementEdit.Visible = false;
 			// 
+			// tbAnimations
+			// 
+			this.tbAnimations.Controls.Add(this.btPreview);
+			this.tbAnimations.Controls.Add(this.gpOut);
+			this.tbAnimations.Controls.Add(this.gpIn);
+			this.tbAnimations.Location = new System.Drawing.Point(4, 22);
+			this.tbAnimations.Name = "tbAnimations";
+			this.tbAnimations.Padding = new System.Windows.Forms.Padding(3);
+			this.tbAnimations.Size = new System.Drawing.Size(284, 687);
+			this.tbAnimations.TabIndex = 2;
+			this.tbAnimations.Text = "Animations";
+			this.tbAnimations.UseVisualStyleBackColor = true;
+			// 
+			// btPreview
+			// 
+			this.btPreview.Dock = System.Windows.Forms.DockStyle.Top;
+			this.btPreview.Location = new System.Drawing.Point(3, 635);
+			this.btPreview.Margin = new System.Windows.Forms.Padding(25, 3, 25, 3);
+			this.btPreview.Name = "btPreview";
+			this.btPreview.Size = new System.Drawing.Size(278, 23);
+			this.btPreview.TabIndex = 0;
+			this.btPreview.Tag = "P";
+			this.btPreview.Text = "Preview";
+			this.btPreview.UseVisualStyleBackColor = true;
+			this.btPreview.Click += new System.EventHandler(this.btPreview_Click);
+			// 
+			// gpOut
+			// 
+			this.gpOut.Controls.Add(this.outEditor);
+			this.gpOut.Dock = System.Windows.Forms.DockStyle.Top;
+			this.gpOut.Location = new System.Drawing.Point(3, 319);
+			this.gpOut.Name = "gpOut";
+			this.gpOut.Size = new System.Drawing.Size(278, 316);
+			this.gpOut.TabIndex = 1;
+			this.gpOut.TabStop = false;
+			this.gpOut.Text = "Out";
+			this.gpOut.Visible = false;
+			// 
 			// outEditor
 			// 
 			this.outEditor.Cursor = System.Windows.Forms.Cursors.Default;
@@ -418,6 +404,18 @@
 			this.outEditor.Size = new System.Drawing.Size(272, 297);
 			this.outEditor.TabIndex = 0;
 			this.outEditor.Viewer = null;
+			// 
+			// gpIn
+			// 
+			this.gpIn.Controls.Add(this.inEditor);
+			this.gpIn.Dock = System.Windows.Forms.DockStyle.Top;
+			this.gpIn.Location = new System.Drawing.Point(3, 3);
+			this.gpIn.Name = "gpIn";
+			this.gpIn.Size = new System.Drawing.Size(278, 316);
+			this.gpIn.TabIndex = 0;
+			this.gpIn.TabStop = false;
+			this.gpIn.Text = "In";
+			this.gpIn.Visible = false;
 			// 
 			// inEditor
 			// 
@@ -433,6 +431,67 @@
 			this.inEditor.TabIndex = 0;
 			this.inEditor.Viewer = null;
 			// 
+			// toolStrip3
+			// 
+			this.toolStrip3.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			this.toolStrip3.ImageScalingSize = new System.Drawing.Size(24, 24);
+			this.toolStrip3.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btNew,
+            this.btOpen,
+            this.btSave,
+            this.btSaveAs});
+			this.toolStrip3.Location = new System.Drawing.Point(0, 0);
+			this.toolStrip3.Name = "toolStrip3";
+			this.toolStrip3.Size = new System.Drawing.Size(1148, 31);
+			this.toolStrip3.TabIndex = 2;
+			// 
+			// btNew
+			// 
+			this.btNew.Image = global::titler.Properties.Resources.page_white;
+			this.btNew.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.btNew.Name = "btNew";
+			this.btNew.Size = new System.Drawing.Size(59, 28);
+			this.btNew.Text = "New";
+			this.btNew.Click += new System.EventHandler(this.btNew_Click);
+			// 
+			// btOpen
+			// 
+			this.btOpen.Image = global::titler.Properties.Resources.folder_vertical_open;
+			this.btOpen.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.btOpen.Name = "btOpen";
+			this.btOpen.Size = new System.Drawing.Size(64, 28);
+			this.btOpen.Text = "Open";
+			this.btOpen.Click += new System.EventHandler(this.btOpen_Click);
+			// 
+			// btSave
+			// 
+			this.btSave.Image = global::titler.Properties.Resources.disk;
+			this.btSave.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.btSave.Name = "btSave";
+			this.btSave.Size = new System.Drawing.Size(59, 28);
+			this.btSave.Text = "Save";
+			this.btSave.Click += new System.EventHandler(this.btSave_Click);
+			// 
+			// btSaveAs
+			// 
+			this.btSaveAs.Image = global::titler.Properties.Resources.save_as;
+			this.btSaveAs.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.btSaveAs.Name = "btSaveAs";
+			this.btSaveAs.Size = new System.Drawing.Size(84, 28);
+			this.btSaveAs.Text = "Save As...";
+			this.btSaveAs.Click += new System.EventHandler(this.btSaveAs_Click);
+			// 
+			// vwCanvas
+			// 
+			this.vwCanvas.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.vwCanvas.Location = new System.Drawing.Point(0, 31);
+			this.vwCanvas.Name = "vwCanvas";
+			this.vwCanvas.Size = new System.Drawing.Size(825, 713);
+			this.vwCanvas.TabIndex = 0;
+			this.vwCanvas.Text = "viewer1";
+			title1.Resolution = new System.Drawing.Size(1920, 1080);
+			this.vwCanvas.Title = title1;
+			// 
 			// DesignerForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -440,6 +499,7 @@
 			this.ClientSize = new System.Drawing.Size(1148, 744);
 			this.Controls.Add(this.vwCanvas);
 			this.Controls.Add(this.tbTools);
+			this.Controls.Add(this.toolStrip3);
 			this.Name = "DesignerForm";
 			this.Text = "Form1";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
@@ -455,7 +515,10 @@
 			this.tbAnimations.ResumeLayout(false);
 			this.gpOut.ResumeLayout(false);
 			this.gpIn.ResumeLayout(false);
+			this.toolStrip3.ResumeLayout(false);
+			this.toolStrip3.PerformLayout();
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
         }
 
@@ -492,6 +555,11 @@
 		private System.Windows.Forms.ToolStripMenuItem btCreateRectangle;
 		private System.Windows.Forms.ToolStripMenuItem btCreateImage;
 		private System.Windows.Forms.PropertyGrid pgTitle;
+		private System.Windows.Forms.ToolStrip toolStrip3;
+		private System.Windows.Forms.ToolStripButton btNew;
+		private System.Windows.Forms.ToolStripButton btOpen;
+		private System.Windows.Forms.ToolStripButton btSave;
+		private System.Windows.Forms.ToolStripButton btSaveAs;
 	}
 }
 

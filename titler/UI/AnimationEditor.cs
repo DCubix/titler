@@ -68,10 +68,15 @@ namespace titler.UI {
 			}
 			UpdateParams();
 			Viewer.Invalidate();
+			Viewer.TriggerDataChange();
 		}
 
 		private void btPlayStop_Click(object sender, EventArgs e) {
 			
+		}
+
+		private void pgProps_PropertyValueChanged(object s, PropertyValueChangedEventArgs e) {
+			Viewer.TriggerDataChange();
 		}
 	}
 }

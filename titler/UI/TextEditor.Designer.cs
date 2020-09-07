@@ -24,6 +24,7 @@
 		/// </summary>
 		private void InitializeComponent() {
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.ckAutoSize = new System.Windows.Forms.CheckBox();
 			this.btLinkText = new System.Windows.Forms.Button();
 			this.cbHAlign = new System.Windows.Forms.ComboBox();
 			this.cbVAlign = new System.Windows.Forms.ComboBox();
@@ -35,7 +36,6 @@
 			this.label2 = new System.Windows.Forms.Label();
 			this.btFill = new System.Windows.Forms.Button();
 			this.label1 = new System.Windows.Forms.Label();
-			this.ckAutoSize = new System.Windows.Forms.CheckBox();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -60,6 +60,17 @@
 			this.groupBox1.TabIndex = 9;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Text";
+			// 
+			// ckAutoSize
+			// 
+			this.ckAutoSize.AutoSize = true;
+			this.ckAutoSize.Location = new System.Drawing.Point(131, 240);
+			this.ckAutoSize.Name = "ckAutoSize";
+			this.ckAutoSize.Size = new System.Drawing.Size(71, 17);
+			this.ckAutoSize.TabIndex = 28;
+			this.ckAutoSize.Text = "Auto Size";
+			this.ckAutoSize.UseVisualStyleBackColor = true;
+			this.ckAutoSize.CheckedChanged += new System.EventHandler(this.ckAutoSize_CheckedChanged);
 			// 
 			// btLinkText
 			// 
@@ -151,6 +162,7 @@
 			this.txText.Size = new System.Drawing.Size(161, 95);
 			this.txText.TabIndex = 20;
 			this.txText.TextChanged += new System.EventHandler(this.txText_TextChanged);
+			this.txText.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txText_KeyPress);
 			// 
 			// label2
 			// 
@@ -185,17 +197,6 @@
 			this.label1.TabIndex = 17;
 			this.label1.Text = "Fill Color";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			// 
-			// ckAutoSize
-			// 
-			this.ckAutoSize.AutoSize = true;
-			this.ckAutoSize.Location = new System.Drawing.Point(131, 240);
-			this.ckAutoSize.Name = "ckAutoSize";
-			this.ckAutoSize.Size = new System.Drawing.Size(71, 17);
-			this.ckAutoSize.TabIndex = 28;
-			this.ckAutoSize.Text = "Auto Size";
-			this.ckAutoSize.UseVisualStyleBackColor = true;
-			this.ckAutoSize.CheckedChanged += new System.EventHandler(this.ckAutoSize_CheckedChanged);
 			// 
 			// TextEditor
 			// 
