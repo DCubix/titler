@@ -77,6 +77,10 @@ namespace titler {
 				textEdit.Enabled = true;
 				imageEdit.Enabled = true;
 
+				foreach (var el in vwCanvas.Title.ElementList) {
+					el.Reset();
+				}
+
 				btPreview.Tag = "P";
 				btPreview.Text = "Preview";
 
@@ -88,11 +92,6 @@ namespace titler {
 		private void Form1_Load(object sender, EventArgs e) {
 			vwCanvas.OnDataChange += VwCanvas_OnDataChange;
 			vwCanvas.OnChange += VwCanvas_OnChange;
-
-			lstVars.Items.Clear();
-			foreach (var v in vwCanvas.Title.Variables) {
-				lstVars.Items.Add(new ListViewItem(v.Key));
-			}
 
 			RebuildElementList();
 			UpdateFormTitle();
@@ -189,43 +188,8 @@ namespace titler {
 				btPreview.Text = "Preview";
 
 				foreach (var el in vwCanvas.Title.ElementList) {
-					el.InAnimation?.Reset();
-					el.OutAnimation?.Reset();
+					el.Reset();
 				}
-			}
-		}
-
-		private void lstVars_MouseDoubleClick(object sender, MouseEventArgs e) {
-			if (lstVars.SelectedItems.Count > 0) {
-				lstVars.SelectedItems[0].BeginEdit();
-			}
-		}
-
-		private void btAddVar_Click(object sender, EventArgs e) {
-			var i = 0;
-			while (lstVars.Items.Cast<ListViewItem>().Select(k => k.Text).Contains("variable" + i)) {
-				i++;
-			}
-			lstVars.Items.Add("variable" + i).BeginEdit();
-		}
-
-		private void lstVars_AfterLabelEdit(object sender, LabelEditEventArgs e) {
-			var txt = lstVars.Items[e.Item];
-			var newName = e.Label != null ? e.Label : txt.Text;
-			vwCanvas.Title.Variables.Add(newName, "");
-		}
-
-		private void lstVars_BeforeLabelEdit(object sender, LabelEditEventArgs e) {
-			var txt = lstVars.Items[e.Item];
-			vwCanvas.Title.UnlinkVariable(txt.Text);
-			vwCanvas.Title.Variables.Remove(txt.Text);
-		}
-
-		private void btDelVar_Click(object sender, EventArgs e) {
-			if (lstVars.SelectedItems.Count > 0) {
-				var txt = lstVars.Items[lstVars.SelectedIndices[0]];
-				vwCanvas.Title.Variables.Remove(txt.Text);
-				lstVars.Items.Remove(txt);
 			}
 		}
 
@@ -405,10 +369,8 @@ namespace titler {
 					vwCanvas.Title = new Title();
 					vwCanvas.Title.LoadFromFile(fileName);
 
-					lstVars.Items.Clear();
-					foreach (var v in vwCanvas.Title.Variables) {
-						lstVars.Items.Add(new ListViewItem(v.Key));
-					}
+					btPreview_Click(null, null);
+					btPreview_Click(null, null);
 
 					RebuildElementList();
 
@@ -474,21 +436,6 @@ namespace titler {
 			Text = txt;
 		}
 
-	}
-
-	public class NDIOutput : NDI {
-
-		public List<Layer> Layers { get; }
-
-		public NDIOutput(int width, int height) : base(width, height, "NDI Titler") {
-			Layers = new List<Layer>();
-		}
-
-		public override void Render(Graphics ctx, float dt) {
-			foreach (var ly in Layers) {
-				ly.Render(ctx, dt);
-			}
-		}
 	}
 
 }

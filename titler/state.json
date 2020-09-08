@@ -1,0 +1,21 @@
+{
+  "recent": [
+    "C:\\Users\\Diego\\OneDrive\\Área de Trabalho\\hello.tdn"
+  ],
+  "presets": [
+    {
+      "title": "C:\\Users\\Diego\\OneDrive\\Área de Trabalho\\TEST.tdn",
+      "presets": [
+        [
+          "Test!"
+        ],
+        [
+          "Hello World!"
+        ],
+        [
+          "Diego"
+        ]
+      ]
+    }
+  ]
+}

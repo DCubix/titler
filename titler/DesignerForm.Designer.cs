@@ -31,11 +31,6 @@
 			titler.Titler.Title title1 = new titler.Titler.Title();
 			this.tbTools = new System.Windows.Forms.TabControl();
 			this.tbTitle = new System.Windows.Forms.TabPage();
-			this.lstVars = new System.Windows.Forms.ListView();
-			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-			this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
-			this.btAddVar = new System.Windows.Forms.ToolStripButton();
-			this.btDelVar = new System.Windows.Forms.ToolStripButton();
 			this.lsElements = new System.Windows.Forms.ListView();
 			this.toolStrip2 = new System.Windows.Forms.ToolStrip();
 			this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
@@ -67,7 +62,6 @@
 			this.vwCanvas = new titler.Titler.Viewer();
 			this.tbTools.SuspendLayout();
 			this.tbTitle.SuspendLayout();
-			this.toolStrip1.SuspendLayout();
 			this.toolStrip2.SuspendLayout();
 			this.tbProps.SuspendLayout();
 			this.tbAnimations.SuspendLayout();
@@ -90,8 +84,6 @@
 			// 
 			// tbTitle
 			// 
-			this.tbTitle.Controls.Add(this.lstVars);
-			this.tbTitle.Controls.Add(this.toolStrip1);
 			this.tbTitle.Controls.Add(this.lsElements);
 			this.tbTitle.Controls.Add(this.toolStrip2);
 			this.tbTitle.Controls.Add(this.pgTitle);
@@ -102,62 +94,6 @@
 			this.tbTitle.TabIndex = 0;
 			this.tbTitle.Text = "Title";
 			this.tbTitle.UseVisualStyleBackColor = true;
-			// 
-			// lstVars
-			// 
-			this.lstVars.Dock = System.Windows.Forms.DockStyle.Top;
-			this.lstVars.GridLines = true;
-			this.lstVars.HideSelection = false;
-			this.lstVars.LabelEdit = true;
-			this.lstVars.Location = new System.Drawing.Point(3, 420);
-			this.lstVars.MultiSelect = false;
-			this.lstVars.Name = "lstVars";
-			this.lstVars.Size = new System.Drawing.Size(309, 150);
-			this.lstVars.TabIndex = 2;
-			this.lstVars.UseCompatibleStateImageBehavior = false;
-			this.lstVars.View = System.Windows.Forms.View.List;
-			this.lstVars.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.lstVars_AfterLabelEdit);
-			this.lstVars.BeforeLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.lstVars_BeforeLabelEdit);
-			this.lstVars.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lstVars_MouseDoubleClick);
-			// 
-			// toolStrip1
-			// 
-			this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-			this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripLabel1,
-            this.btAddVar,
-            this.btDelVar});
-			this.toolStrip1.Location = new System.Drawing.Point(3, 395);
-			this.toolStrip1.Name = "toolStrip1";
-			this.toolStrip1.Size = new System.Drawing.Size(309, 25);
-			this.toolStrip1.TabIndex = 1;
-			this.toolStrip1.Text = "toolStrip1";
-			// 
-			// toolStripLabel1
-			// 
-			this.toolStripLabel1.Name = "toolStripLabel1";
-			this.toolStripLabel1.Size = new System.Drawing.Size(53, 22);
-			this.toolStripLabel1.Text = "Variables";
-			// 
-			// btAddVar
-			// 
-			this.btAddVar.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.btAddVar.Image = global::titler.Properties.Resources.add;
-			this.btAddVar.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.btAddVar.Name = "btAddVar";
-			this.btAddVar.Size = new System.Drawing.Size(23, 22);
-			this.btAddVar.Text = "Create Variable";
-			this.btAddVar.Click += new System.EventHandler(this.btAddVar_Click);
-			// 
-			// btDelVar
-			// 
-			this.btDelVar.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.btDelVar.Image = global::titler.Properties.Resources.delete1;
-			this.btDelVar.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.btDelVar.Name = "btDelVar";
-			this.btDelVar.Size = new System.Drawing.Size(23, 22);
-			this.btDelVar.Text = "Delete Variable";
-			this.btDelVar.Click += new System.EventHandler(this.btDelVar_Click);
 			// 
 			// lsElements
 			// 
@@ -290,7 +226,7 @@
 			this.tbProps.Location = new System.Drawing.Point(4, 22);
 			this.tbProps.Name = "tbProps";
 			this.tbProps.Padding = new System.Windows.Forms.Padding(3);
-			this.tbProps.Size = new System.Drawing.Size(284, 687);
+			this.tbProps.Size = new System.Drawing.Size(315, 687);
 			this.tbProps.TabIndex = 1;
 			this.tbProps.Text = "Properties";
 			this.tbProps.UseVisualStyleBackColor = true;
@@ -304,7 +240,7 @@
 			this.imageEdit.Location = new System.Drawing.Point(3, 822);
 			this.imageEdit.Name = "imageEdit";
 			this.imageEdit.Padding = new System.Windows.Forms.Padding(8);
-			this.imageEdit.Size = new System.Drawing.Size(261, 156);
+			this.imageEdit.Size = new System.Drawing.Size(292, 156);
 			this.imageEdit.TabIndex = 3;
 			this.imageEdit.Viewer = null;
 			this.imageEdit.Visible = false;
@@ -318,7 +254,7 @@
 			this.textEdit.Location = new System.Drawing.Point(3, 536);
 			this.textEdit.Name = "textEdit";
 			this.textEdit.Padding = new System.Windows.Forms.Padding(8);
-			this.textEdit.Size = new System.Drawing.Size(261, 286);
+			this.textEdit.Size = new System.Drawing.Size(292, 286);
 			this.textEdit.TabIndex = 2;
 			this.textEdit.Title = null;
 			this.textEdit.Viewer = null;
@@ -333,7 +269,7 @@
 			this.rectangleEdit.Location = new System.Drawing.Point(3, 318);
 			this.rectangleEdit.Name = "rectangleEdit";
 			this.rectangleEdit.Padding = new System.Windows.Forms.Padding(8);
-			this.rectangleEdit.Size = new System.Drawing.Size(261, 218);
+			this.rectangleEdit.Size = new System.Drawing.Size(292, 218);
 			this.rectangleEdit.TabIndex = 1;
 			this.rectangleEdit.Viewer = null;
 			this.rectangleEdit.Visible = false;
@@ -347,7 +283,7 @@
 			this.elementEdit.Location = new System.Drawing.Point(3, 3);
 			this.elementEdit.Name = "elementEdit";
 			this.elementEdit.Padding = new System.Windows.Forms.Padding(8);
-			this.elementEdit.Size = new System.Drawing.Size(261, 315);
+			this.elementEdit.Size = new System.Drawing.Size(292, 315);
 			this.elementEdit.TabIndex = 0;
 			this.elementEdit.Title = null;
 			this.elementEdit.Viewer = null;
@@ -361,7 +297,7 @@
 			this.tbAnimations.Location = new System.Drawing.Point(4, 22);
 			this.tbAnimations.Name = "tbAnimations";
 			this.tbAnimations.Padding = new System.Windows.Forms.Padding(3);
-			this.tbAnimations.Size = new System.Drawing.Size(284, 687);
+			this.tbAnimations.Size = new System.Drawing.Size(315, 687);
 			this.tbAnimations.TabIndex = 2;
 			this.tbAnimations.Text = "Animations";
 			this.tbAnimations.UseVisualStyleBackColor = true;
@@ -372,7 +308,7 @@
 			this.btPreview.Location = new System.Drawing.Point(3, 635);
 			this.btPreview.Margin = new System.Windows.Forms.Padding(25, 3, 25, 3);
 			this.btPreview.Name = "btPreview";
-			this.btPreview.Size = new System.Drawing.Size(278, 23);
+			this.btPreview.Size = new System.Drawing.Size(309, 23);
 			this.btPreview.TabIndex = 0;
 			this.btPreview.Tag = "P";
 			this.btPreview.Text = "Preview";
@@ -385,7 +321,7 @@
 			this.gpOut.Dock = System.Windows.Forms.DockStyle.Top;
 			this.gpOut.Location = new System.Drawing.Point(3, 319);
 			this.gpOut.Name = "gpOut";
-			this.gpOut.Size = new System.Drawing.Size(278, 316);
+			this.gpOut.Size = new System.Drawing.Size(309, 316);
 			this.gpOut.TabIndex = 1;
 			this.gpOut.TabStop = false;
 			this.gpOut.Text = "Out";
@@ -401,7 +337,7 @@
 			this.outEditor.Margin = new System.Windows.Forms.Padding(0);
 			this.outEditor.Name = "outEditor";
 			this.outEditor.Padding = new System.Windows.Forms.Padding(8);
-			this.outEditor.Size = new System.Drawing.Size(272, 297);
+			this.outEditor.Size = new System.Drawing.Size(303, 297);
 			this.outEditor.TabIndex = 0;
 			this.outEditor.Viewer = null;
 			// 
@@ -411,7 +347,7 @@
 			this.gpIn.Dock = System.Windows.Forms.DockStyle.Top;
 			this.gpIn.Location = new System.Drawing.Point(3, 3);
 			this.gpIn.Name = "gpIn";
-			this.gpIn.Size = new System.Drawing.Size(278, 316);
+			this.gpIn.Size = new System.Drawing.Size(309, 316);
 			this.gpIn.TabIndex = 0;
 			this.gpIn.TabStop = false;
 			this.gpIn.Text = "In";
@@ -427,7 +363,7 @@
 			this.inEditor.Margin = new System.Windows.Forms.Padding(0);
 			this.inEditor.Name = "inEditor";
 			this.inEditor.Padding = new System.Windows.Forms.Padding(8);
-			this.inEditor.Size = new System.Drawing.Size(272, 297);
+			this.inEditor.Size = new System.Drawing.Size(303, 297);
 			this.inEditor.TabIndex = 0;
 			this.inEditor.Viewer = null;
 			// 
@@ -507,8 +443,6 @@
 			this.tbTools.ResumeLayout(false);
 			this.tbTitle.ResumeLayout(false);
 			this.tbTitle.PerformLayout();
-			this.toolStrip1.ResumeLayout(false);
-			this.toolStrip1.PerformLayout();
 			this.toolStrip2.ResumeLayout(false);
 			this.toolStrip2.PerformLayout();
 			this.tbProps.ResumeLayout(false);
@@ -538,11 +472,6 @@
 		private System.Windows.Forms.GroupBox gpOut;
 		private UI.AnimationEditor outEditor;
 		private System.Windows.Forms.Button btPreview;
-		private System.Windows.Forms.ToolStrip toolStrip1;
-		private System.Windows.Forms.ToolStripButton btAddVar;
-		private System.Windows.Forms.ToolStripButton btDelVar;
-		private System.Windows.Forms.ListView lstVars;
-		private System.Windows.Forms.ToolStripLabel toolStripLabel1;
 		private System.Windows.Forms.ListView lsElements;
 		private System.Windows.Forms.ToolStrip toolStrip2;
 		private System.Windows.Forms.ToolStripLabel toolStripLabel2;

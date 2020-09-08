@@ -83,8 +83,7 @@ namespace titler.Titler {
 			var hith = false;
 			if (Selected.Count > 0) {
 				foreach (var el in Selected) {
-					var sz = el.GetPreferredSize();
-					var eb = new Rectangle(el.Bounds.X, el.Bounds.Y, sz.Width, sz.Height);
+					var eb = el.CorrectBounds;
 					eb.Inflate(HandleSize / 2 + 2, HandleSize / 2 + 2);
 
 					var isTextAutoSize = el is TextElement && (el as TextElement).AutoSize;
@@ -108,8 +107,7 @@ namespace titler.Titler {
 				foreach (var el in Title.Elements.Values.OrderBy(o => o.DrawOrder).Reverse()) {
 					if (!el.Visible) continue;
 
-					var sz = el.GetPreferredSize();
-					var eb = new Rectangle(el.Bounds.X, el.Bounds.Y, sz.Width, sz.Height);
+					var eb = el.CorrectBounds;
 					eb.Inflate(HandleSize + 2, HandleSize + 2);
 
 					if (eb.Contains(p1)) {
@@ -241,8 +239,8 @@ namespace titler.Titler {
 			dashPen.DashStyle = DashStyle.Dash;
 
 			foreach (var el in Selected) {
-				var sz = el.GetPreferredSize();
-				var eb = new Rectangle(el.Bounds.X, el.Bounds.Y, sz.Width, sz.Height);
+				var b = el.CorrectBounds;
+				var eb = new Rectangle(b.X, b.Y, b.Width, b.Height);
 				eb.Inflate(HandleSize / 2, HandleSize / 2);
 
 				ctx.DrawRectangle(Pens.White, eb);

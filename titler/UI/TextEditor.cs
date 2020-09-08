@@ -93,27 +93,6 @@ namespace titler.UI {
 			Viewer.Invalidate();
 		}
 
-		private void btLinkText_Click(object sender, EventArgs e) {
-			var items = Title.AvailableVariables.Select(v => new MenuItem(v, VarTextClick)).ToList();
-			items.Insert(0, new MenuItem("None", ClearTextClick));
-
-			btLinkText.ContextMenu = new ContextMenu(
-				items.ToArray()
-			);
-			btLinkText.ContextMenu.Show(btLinkText, Point.Empty);
-		}
-
-		private void VarTextClick(object sender, EventArgs e) {
-			var it = (sender as MenuItem);
-			Title.LinkVariable(Element, it.Text, "Text");
-			Viewer.TriggerDataChange();
-		}
-
-		private void ClearTextClick(object sender, EventArgs e) {
-			Title.UnlinkVariable(Element, "Text");
-			Viewer.TriggerDataChange();
-		}
-
 		private void ckAutoSize_CheckedChanged(object sender, EventArgs e) {
 			element.AutoSize = ckAutoSize.Checked;
 			Viewer.Invalidate();
@@ -121,6 +100,10 @@ namespace titler.UI {
 		}
 
 		private void txText_KeyPress(object sender, KeyPressEventArgs e) {
+
+		}
+
+		private void txText_KeyDown(object sender, KeyEventArgs e) {
 			element.Text = txText.Text;
 			Viewer.Invalidate();
 			Viewer.TriggerDataChange();

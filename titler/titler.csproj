@@ -118,6 +118,12 @@
     <Compile Include="UI\TextEditor.Designer.cs">
       <DependentUpon>TextEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\TextVarEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\TextVarEditor.Designer.cs">
+      <DependentUpon>TextVarEditor.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="DesignerForm.resx">
       <DependentUpon>DesignerForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -148,6 +154,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\TextEditor.resx">
       <DependentUpon>TextEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\TextVarEditor.resx">
+      <DependentUpon>TextVarEditor.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -182,6 +191,10 @@
     <Content Include="Processing.NDI.Lib.x86.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\accept.png" />
+    <None Include="Resources\layouts_design.png" />
+    <None Include="Resources\eye.png" />
+    <None Include="Resources\eye_close.png" />
     <None Include="Resources\control_play_blue1.png" />
     <None Include="Resources\delete2.png" />
     <None Include="Resources\disk2.png" />

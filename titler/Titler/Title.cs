@@ -14,27 +14,9 @@ using System.Threading.Tasks;
 
 namespace titler.Titler {
 
-	public struct Link {
-		public Element Element { get; set; }
-		public string Property { get; set; }
-	}
-
 	public class Title {
 		[Browsable(false)]
 		public Dictionary<string, Element> Elements { get; }
-
-		[Browsable(false)]
-		public Dictionary<string, string> Variables { get; }
-
-		[Browsable(false)]
-		public Dictionary<string, Link> VariableLinks { get; }
-
-		[Browsable(false)]
-		public List<string> AvailableVariables {
-			get {
-				return Variables.Keys.Where(e => !VariableLinks.ContainsKey(e)).ToList();
-			}
-		}
 
 		[Category("Output")]
 		[Description("Output Resolution")]
@@ -42,8 +24,6 @@ namespace titler.Titler {
 
 		public Title() {
 			Elements = new Dictionary<string, Element>();
-			Variables = new Dictionary<string, string>();
-			VariableLinks = new Dictionary<string, Link>();
 			Resolution = new Size(1920, 1080);
 		}
 
@@ -61,28 +41,18 @@ namespace titler.Titler {
 			}
 		}
 
-		public void LinkVariable(Element element, string variable, string property) {
-			var lnk = new Link();
-			lnk.Element = element;
-			lnk.Property = property;
-			VariableLinks.Add(variable, lnk);
+		[Browsable(false)]
+		public bool Shown { get; set; }
+
+		public void Show() {
+			Shown = true;
+			foreach (var el in Elements) el.Value.Show();
 		}
 
-		public void UnlinkVariable(string name) {
-			if (!VariableLinks.ContainsKey(name)) return;
-			VariableLinks.Remove(name);
+		public void Hide() {
+			foreach (var el in Elements) el.Value.Hide();
 		}
-
-		public void UnlinkVariable(Element element, string property) {
-			var vname = "";
-			foreach (var vl in VariableLinks) {
-				if (vl.Value.Element == element && vl.Value.Property == property) {
-					vname = vl.Key;
-				}
-			}
-			UnlinkVariable(vname);
-		}
-
+		
 		public Element GetElement(string name) {
 			if (!Elements.ContainsKey(name)) return null;
 			return Elements[name];
@@ -131,14 +101,11 @@ namespace titler.Titler {
 		}
 
 		public void Render(Graphics ctx, float dt) {
-			// link vars
-			foreach (var link in VariableLinks) {
-				var value = Variables[link.Key];
-				var lnk = link.Value;
-
-				var prop = lnk.Element.GetType().GetProperty(lnk.Property);
-				if (prop != null && prop.CanWrite) {
-					prop.SetValue(lnk.Element, value);
+			Shown = false;
+			foreach (var el in ElementList) {
+				if (el.State != ElementState.Hidden) {
+					Shown = true;
+					break;
 				}
 			}
 
@@ -151,10 +118,15 @@ namespace titler.Titler {
 			}
 		}
 
-		public Bitmap GetPreview() {
-			using (var bmp = new Bitmap(Resolution.Width, Resolution.Height))
+		public Bitmap GetPreview(Size sz) {
+			var loc = Viewer.GetViewLocation(Resolution, sz);
+			var zoom = Viewer.GetZoom(Resolution, sz);
+
+			var bmp = new Bitmap(sz.Width, sz.Height);
 			using (var g = Graphics.FromImage(bmp))
 			{
+				g.TranslateTransform(loc.X, loc.Y);
+				g.ScaleTransform(zoom, zoom);
 				var state = g.Save();
 				var cols = (Resolution.Width + 16) / 16;
 				var rows = (Resolution.Height + 16) / 16;
@@ -168,9 +140,10 @@ namespace titler.Titler {
 				}
 				g.Restore(state);
 
-				Render(g, 0.0f);
-				return bmp;
+				Render(g, 1.0f);
+				Render(g, 1.0f);
 			}
+			return bmp;
 		}
 
 		public void LoadFromFile(string fileName) {
@@ -212,20 +185,8 @@ namespace titler.Titler {
 				}
 			}
 
-			// Read variables
-			JObject vars = (JObject)ob["variables"];
-			foreach (var ve in vars) {
-				Variables[ve.Key] = "";
-			}
-
-			// Link variables
-			JObject vlinks = (JObject)ob["variableLinks"];
-			foreach (var ve in vlinks) {
-				var lnk = (JObject) ve.Value;
-				var link = new Link();
-				link.Element = GetElement((string)lnk["element"]);
-				link.Property = (string)lnk["property"];
-				VariableLinks[ve.Key] = link;
+			foreach (var el in ElementList) {
+				el.Reset();
 			}
 		}
 
@@ -260,26 +221,9 @@ namespace titler.Titler {
 				links.Add(lnk);
 			}
 
-			// Variables
-			JObject vars = new JObject();
-			foreach (var e in Variables) {
-				vars[e.Key] = e.Value;
-			}
-
-			// Variable Links
-			JObject vlinks = new JObject();
-			foreach (var e in VariableLinks) {
-				var lnk = new JObject();
-				lnk["element"] = GetName(e.Value.Element);
-				lnk["property"] = e.Value.Property;
-				vlinks[e.Key] = lnk;
-			}
-
 			// Assemble
 			ob["elements"] = elems;
 			ob["links"] = links;
-			ob["variables"] = vars;
-			ob["variableLinks"] = vlinks;
 			ob["resolution"] = new JArray(Resolution.Width, Resolution.Height);
 
 			using (var sw = new StreamWriter(fileName)) {

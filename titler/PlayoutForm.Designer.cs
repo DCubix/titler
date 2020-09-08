@@ -25,6 +25,7 @@
 		private void InitializeComponent() {
 			this.toolStrip3 = new System.Windows.Forms.ToolStrip();
 			this.btOpen = new System.Windows.Forms.ToolStripButton();
+			this.tbDesigner = new System.Windows.Forms.ToolStripButton();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
 			this.tabControl1 = new System.Windows.Forms.TabControl();
 			this.tbRecent = new System.Windows.Forms.TabPage();
@@ -32,12 +33,14 @@
 			this.splitContainer2 = new System.Windows.Forms.SplitContainer();
 			this.toolStrip2 = new System.Windows.Forms.ToolStrip();
 			this.tbShowHide = new System.Windows.Forms.ToolStripButton();
+			this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
 			this.lsPresets = new System.Windows.Forms.ListBox();
 			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+			this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
 			this.btSaveCurrent = new System.Windows.Forms.ToolStripButton();
 			this.btDelete = new System.Windows.Forms.ToolStripButton();
-			this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
-			this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
+			this.lsVars = new System.Windows.Forms.ListBox();
+			this.pnEdit = new System.Windows.Forms.Panel();
 			this.toolStrip3.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel1.SuspendLayout();
@@ -58,7 +61,8 @@
 			this.toolStrip3.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.toolStrip3.ImageScalingSize = new System.Drawing.Size(24, 24);
 			this.toolStrip3.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.btOpen});
+            this.btOpen,
+            this.tbDesigner});
 			this.toolStrip3.Location = new System.Drawing.Point(0, 0);
 			this.toolStrip3.Name = "toolStrip3";
 			this.toolStrip3.Size = new System.Drawing.Size(668, 31);
@@ -71,6 +75,17 @@
 			this.btOpen.Name = "btOpen";
 			this.btOpen.Size = new System.Drawing.Size(112, 28);
 			this.btOpen.Text = "Open Design...";
+			this.btOpen.Click += new System.EventHandler(this.btOpen_Click);
+			// 
+			// tbDesigner
+			// 
+			this.tbDesigner.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.tbDesigner.Image = global::titler.Properties.Resources.layouts_design;
+			this.tbDesigner.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tbDesigner.Name = "tbDesigner";
+			this.tbDesigner.Size = new System.Drawing.Size(106, 28);
+			this.tbDesigner.Text = "Title Designer";
+			this.tbDesigner.Click += new System.EventHandler(this.tbDesigner_Click);
 			// 
 			// splitContainer1
 			// 
@@ -115,10 +130,12 @@
 			this.lsRecent.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.lsRecent.HideSelection = false;
 			this.lsRecent.Location = new System.Drawing.Point(3, 3);
+			this.lsRecent.MultiSelect = false;
 			this.lsRecent.Name = "lsRecent";
 			this.lsRecent.Size = new System.Drawing.Size(192, 390);
 			this.lsRecent.TabIndex = 0;
 			this.lsRecent.UseCompatibleStateImageBehavior = false;
+			this.lsRecent.SelectedIndexChanged += new System.EventHandler(this.lsRecent_SelectedIndexChanged);
 			// 
 			// splitContainer2
 			// 
@@ -129,7 +146,8 @@
 			// 
 			// splitContainer2.Panel1
 			// 
-			this.splitContainer2.Panel1.Controls.Add(this.propertyGrid1);
+			this.splitContainer2.Panel1.Controls.Add(this.pnEdit);
+			this.splitContainer2.Panel1.Controls.Add(this.lsVars);
 			this.splitContainer2.Panel1.Controls.Add(this.toolStrip2);
 			// 
 			// splitContainer2.Panel2
@@ -156,12 +174,19 @@
 			// tbShowHide
 			// 
 			this.tbShowHide.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-			this.tbShowHide.Image = global::titler.Properties.Resources.control_play_blue1;
+			this.tbShowHide.Image = global::titler.Properties.Resources.eye;
 			this.tbShowHide.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tbShowHide.Name = "tbShowHide";
 			this.tbShowHide.Size = new System.Drawing.Size(64, 28);
 			this.tbShowHide.Tag = "S";
 			this.tbShowHide.Text = "Show";
+			this.tbShowHide.Click += new System.EventHandler(this.tbShowHide_Click);
+			// 
+			// toolStripLabel1
+			// 
+			this.toolStripLabel1.Name = "toolStripLabel1";
+			this.toolStripLabel1.Size = new System.Drawing.Size(53, 28);
+			this.toolStripLabel1.Text = "Variables";
 			// 
 			// lsPresets
 			// 
@@ -171,11 +196,13 @@
 			this.lsPresets.Name = "lsPresets";
 			this.lsPresets.Size = new System.Drawing.Size(458, 158);
 			this.lsPresets.TabIndex = 1;
+			this.lsPresets.SelectedIndexChanged += new System.EventHandler(this.lsPresets_SelectedIndexChanged);
 			// 
 			// toolStrip1
 			// 
 			this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripLabel2,
             this.btSaveCurrent,
             this.btDelete});
 			this.toolStrip1.Location = new System.Drawing.Point(0, 0);
@@ -183,6 +210,12 @@
 			this.toolStrip1.Size = new System.Drawing.Size(458, 25);
 			this.toolStrip1.TabIndex = 0;
 			this.toolStrip1.Text = "toolStrip1";
+			// 
+			// toolStripLabel2
+			// 
+			this.toolStripLabel2.Name = "toolStripLabel2";
+			this.toolStripLabel2.Size = new System.Drawing.Size(44, 22);
+			this.toolStripLabel2.Text = "Presets";
 			// 
 			// btSaveCurrent
 			// 
@@ -192,6 +225,7 @@
 			this.btSaveCurrent.Name = "btSaveCurrent";
 			this.btSaveCurrent.Size = new System.Drawing.Size(23, 22);
 			this.btSaveCurrent.Text = "Save Current Values";
+			this.btSaveCurrent.Click += new System.EventHandler(this.btSaveCurrent_Click);
 			// 
 			// btDelete
 			// 
@@ -201,21 +235,25 @@
 			this.btDelete.Name = "btDelete";
 			this.btDelete.Size = new System.Drawing.Size(23, 22);
 			this.btDelete.Text = "Delete Selected Entry";
+			this.btDelete.Click += new System.EventHandler(this.btDelete_Click);
 			// 
-			// propertyGrid1
+			// lsVars
 			// 
-			this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.propertyGrid1.HelpVisible = false;
-			this.propertyGrid1.Location = new System.Drawing.Point(0, 31);
-			this.propertyGrid1.Name = "propertyGrid1";
-			this.propertyGrid1.Size = new System.Drawing.Size(458, 204);
-			this.propertyGrid1.TabIndex = 1;
+			this.lsVars.Dock = System.Windows.Forms.DockStyle.Left;
+			this.lsVars.FormattingEnabled = true;
+			this.lsVars.Location = new System.Drawing.Point(0, 31);
+			this.lsVars.Name = "lsVars";
+			this.lsVars.Size = new System.Drawing.Size(147, 204);
+			this.lsVars.TabIndex = 1;
+			this.lsVars.SelectedIndexChanged += new System.EventHandler(this.lsVars_SelectedIndexChanged);
 			// 
-			// toolStripLabel1
+			// pnEdit
 			// 
-			this.toolStripLabel1.Name = "toolStripLabel1";
-			this.toolStripLabel1.Size = new System.Drawing.Size(53, 28);
-			this.toolStripLabel1.Text = "Variables";
+			this.pnEdit.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.pnEdit.Location = new System.Drawing.Point(147, 31);
+			this.pnEdit.Name = "pnEdit";
+			this.pnEdit.Size = new System.Drawing.Size(311, 204);
+			this.pnEdit.TabIndex = 2;
 			// 
 			// PlayoutForm
 			// 
@@ -226,6 +264,8 @@
 			this.Controls.Add(this.toolStrip3);
 			this.Name = "PlayoutForm";
 			this.Text = "PlayoutForm";
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PlayoutForm_FormClosing);
+			this.Load += new System.EventHandler(this.PlayoutForm_Load);
 			this.toolStrip3.ResumeLayout(false);
 			this.toolStrip3.PerformLayout();
 			this.splitContainer1.Panel1.ResumeLayout(false);
@@ -264,7 +304,10 @@
 		private System.Windows.Forms.ListBox lsPresets;
 		private System.Windows.Forms.ToolStrip toolStrip2;
 		private System.Windows.Forms.ToolStripButton tbShowHide;
-		private System.Windows.Forms.PropertyGrid propertyGrid1;
 		private System.Windows.Forms.ToolStripLabel toolStripLabel1;
+		private System.Windows.Forms.ToolStripLabel toolStripLabel2;
+		private System.Windows.Forms.ToolStripButton tbDesigner;
+		private System.Windows.Forms.ListBox lsVars;
+		private System.Windows.Forms.Panel pnEdit;
 	}
 }

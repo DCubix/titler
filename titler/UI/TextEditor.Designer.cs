@@ -25,7 +25,6 @@
 		private void InitializeComponent() {
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.ckAutoSize = new System.Windows.Forms.CheckBox();
-			this.btLinkText = new System.Windows.Forms.Button();
 			this.cbHAlign = new System.Windows.Forms.ComboBox();
 			this.cbVAlign = new System.Windows.Forms.ComboBox();
 			this.label5 = new System.Windows.Forms.Label();
@@ -42,7 +41,6 @@
 			// groupBox1
 			// 
 			this.groupBox1.Controls.Add(this.ckAutoSize);
-			this.groupBox1.Controls.Add(this.btLinkText);
 			this.groupBox1.Controls.Add(this.cbHAlign);
 			this.groupBox1.Controls.Add(this.cbVAlign);
 			this.groupBox1.Controls.Add(this.label5);
@@ -71,17 +69,6 @@
 			this.ckAutoSize.Text = "Auto Size";
 			this.ckAutoSize.UseVisualStyleBackColor = true;
 			this.ckAutoSize.CheckedChanged += new System.EventHandler(this.ckAutoSize_CheckedChanged);
-			// 
-			// btLinkText
-			// 
-			this.btLinkText.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btLinkText.Image = global::titler.Properties.Resources.bullet_link;
-			this.btLinkText.Location = new System.Drawing.Point(295, 56);
-			this.btLinkText.Name = "btLinkText";
-			this.btLinkText.Size = new System.Drawing.Size(28, 25);
-			this.btLinkText.TabIndex = 27;
-			this.btLinkText.UseVisualStyleBackColor = true;
-			this.btLinkText.Click += new System.EventHandler(this.btLinkText_Click);
 			// 
 			// cbHAlign
 			// 
@@ -159,9 +146,10 @@
 			this.txText.Location = new System.Drawing.Point(131, 56);
 			this.txText.Multiline = true;
 			this.txText.Name = "txText";
-			this.txText.Size = new System.Drawing.Size(161, 95);
+			this.txText.Size = new System.Drawing.Size(192, 95);
 			this.txText.TabIndex = 20;
 			this.txText.TextChanged += new System.EventHandler(this.txText_TextChanged);
+			this.txText.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txText_KeyDown);
 			this.txText.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txText_KeyPress);
 			// 
 			// label2
@@ -227,7 +215,6 @@
 		private System.Windows.Forms.ComboBox cbVAlign;
 		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.Label label4;
-		private System.Windows.Forms.Button btLinkText;
 		private System.Windows.Forms.CheckBox ckAutoSize;
 	}
 }

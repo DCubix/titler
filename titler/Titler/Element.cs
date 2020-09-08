@@ -28,6 +28,7 @@ namespace titler.Titler {
 		Idle,
 		Waiting,
 		Running,
+		PreFinished,
 		Finished
 	}
 
@@ -39,24 +40,27 @@ namespace titler.Titler {
 	}
 
 	public abstract class Animation {
-		public static Func<double, double>[] EasingFuncs = {
+		public static Func<float, float>[] EasingFuncs = {
 			(t) => t,
 			(t) => t * t * t,
-			(t) => (--t) * t * t + 1.0,
+			(t) => (--t) * t * t + 1.0f,
 			(t) => {
-				double k = 2.0 * t - 2.0;
-				return t < 0.5 ? 4.0 * t * t * t : (t - 1.0) * k * k + 1.0;
+				float k = 2.0f * t - 2.0f;
+				return t < 0.5f ? 4.0f * t * t * t : (t - 1.0f) * k * k + 1.0f;
 			}
 		};
 
 		[Browsable(false)]
-		public double Time { get; set; }
+		public float Time { get; set; }
 
 		[Browsable(false)]
-		public double Value { get; set; }
+		public float Value { get; set; }
 
-		public double Delay { get; set; }
-		public double Duration { get; set; }
+		[Browsable(false)]
+		public float NormalizedValue { get; set; }
+
+		public float Delay { get; set; }
+		public float Duration { get; set; }
 		public Easing EasingFunction { get; set; }
 
 		[Browsable(false)]
@@ -64,6 +68,9 @@ namespace titler.Titler {
 
 		[Browsable(false)]
 		public bool Reverse { get; set; }
+
+		public delegate void FinishedEvent();
+		public event FinishedEvent OnFinished;
 
 		public Animation() {
 			Time = 0.0f;
@@ -91,6 +98,7 @@ namespace titler.Titler {
 		}
 
 		public void Play(bool reverse) {
+			Value = reverse ? 1.0f : 0.0f;
 			Time = 0.0f;
 			State = AnimationState.Waiting;
 			Reverse = reverse;
@@ -99,6 +107,7 @@ namespace titler.Titler {
 		public void Reset() {
 			State = AnimationState.Idle;
 			Time = 0.0f;
+			Value = Reverse ? 1.0f : 0.0f;
 		}
 
 		public abstract void Apply(ref AnimatableProperties props);
@@ -106,20 +115,23 @@ namespace titler.Titler {
 		public void Update(float dt) {
 			switch (State) {
 				case AnimationState.Waiting: {
-					Time += dt;
 					if (Time >= Delay) {
 						Time = 0.0f;
 						State = AnimationState.Running;
-					}
+					} else Time += dt;
 				} break;
 				case AnimationState.Running: {
-					var v = Time / Duration;
-					Value = EasingFuncs[(int)EasingFunction](Reverse ? 1.0f - v : v);
-					Time += dt;
-					if (Time >= Duration) {
+					NormalizedValue = Time / Duration;
+					NormalizedValue = Math.Max(0.0f, Math.Min(NormalizedValue, 1.0f));
+					Value = EasingFuncs[(int)EasingFunction](Reverse ? 1.0f - NormalizedValue : NormalizedValue);
+					if (Time >= Duration-1e-4) {
 						Time = 0.0f;
-						State = AnimationState.Finished;
-					}
+						State = AnimationState.PreFinished;
+					} else Time += dt;
+				} break;
+				case AnimationState.PreFinished: {
+					OnFinished?.Invoke();
+					State = AnimationState.Finished;
 				} break;
 				default: break;
 			}
@@ -135,6 +147,14 @@ namespace titler.Titler {
 
 		public float TargetZoom { get; set; }
 		public float Zoom { get; set; }
+	}
+
+	public enum ElementState {
+		Idle,
+		Showing,
+		Shown,
+		Hiding,
+		Hidden
 	}
 
 	public abstract class Element {
@@ -154,16 +174,18 @@ namespace titler.Titler {
 		public Animation InAnimation { get; set; }
 		public Animation OutAnimation { get; set;  }
 
+		private ElementState state = ElementState.Idle;
+		public ElementState State { get { return state; } }
+
 		private AnimatableProperties props = new AnimatableProperties();
 		public AnimatableProperties AnimatableProperties { get { return props; } }
 
 		protected Animation ActiveAnimation {
 			get {
-				Animation ain = InAnimation, aout = OutAnimation;
-				if (ain != null && ain.State != AnimationState.Finished && ain.State != AnimationState.Idle) {
-					return ain;
-				} else if (aout != null && aout.State != AnimationState.Finished && aout.State != AnimationState.Idle) {
-					return aout;
+				if (state == ElementState.Hiding || state == ElementState.Hidden) {
+					return OutAnimation;
+				} else if (state == ElementState.Showing || state == ElementState.Shown) {
+					return InAnimation;
 				}
 				return null;
 			}
@@ -179,16 +201,30 @@ namespace titler.Titler {
 		public abstract void Render(Graphics ctx, float dt);
 
 		public virtual Size GetPreferredSize() {
+			if (AutoFit != null) {
+				var sz = AutoFit.GetPreferredSize();
+				sz.Width += AutoFit.Margin[0] + AutoFit.Margin[2];
+				sz.Height += AutoFit.Margin[1] + AutoFit.Margin[3];
+				return sz;
+			}
 			return Bounds.Size;
 		}
 
 		protected virtual void SaveProperties() {
-			var sz = GetPreferredSize();
-			props.Bounds = new Rectangle(Bounds.X, Bounds.Y, sz.Width, sz.Height);
-			props.TargetBounds = new Rectangle(Bounds.X, Bounds.Y, sz.Width, sz.Height);
+			props.Bounds = CorrectBounds;
+			props.TargetBounds = CorrectBounds;
 			props.Opacity = Opacity;
 			props.TargetOpacity = Opacity;
 			props.TargetZoom = MaxZoom;
+			props.Zoom = 0.0f;
+		}
+
+		protected void ZeroProperties() {
+			props.Bounds = new Rectangle(Bounds.X, Bounds.Y, 0, 0);
+			props.TargetBounds = new Rectangle(Bounds.X, Bounds.Y, 0, 0);
+			props.Opacity = 0;
+			props.TargetOpacity = 0;
+			props.TargetZoom = 0;
 			props.Zoom = 0.0f;
 		}
 
@@ -256,17 +292,29 @@ namespace titler.Titler {
 		}
 
 		public void Show() {
-			ActiveAnimation?.Reset();
+			state = ElementState.Showing;
+			OutAnimation?.Reset();
 			SaveProperties();
 			InAnimation?.Play(false);
-			InAnimation?.Update(1.0f/24);
+			InAnimation?.Apply(ref props);
 		}
 
 		public void Hide() {
-			ActiveAnimation?.Reset();
+			state = ElementState.Hiding;
+			InAnimation?.Reset();
 			SaveProperties();
 			OutAnimation?.Play(true);
-			OutAnimation?.Update(0.0f);
+			OutAnimation?.Apply(ref props);
+			if (OutAnimation != null) OutAnimation.OnFinished += ZeroProperties;
+		}
+
+		public void Reset() {
+			state = ElementState.Idle;
+			InAnimation?.Reset();
+			OutAnimation?.Reset();
+			InAnimation?.Apply(ref props);
+			OutAnimation?.Apply(ref props);
+			SaveProperties();
 		}
 
 		public bool AnimationPlaying {
@@ -275,43 +323,48 @@ namespace titler.Titler {
 			}
 		}
 
-		public void RenderAll(Graphics ctx, float dt) {
-			var state = ctx.Save();
-
-			if (AutoFit != null) {
-				var sz = AutoFit.GetPreferredSize();
-				Bounds = new Rectangle(
-					AutoFit.Bounds.X - Margin[0],
-					AutoFit.Bounds.Y - Margin[1],
-					sz.Width + Margin[0] + Margin[2],
-					sz.Height + Margin[1] + Margin[3]
-				);
+		public Rectangle CorrectBounds {
+			get {
+				var sz = GetPreferredSize();
+				if (AutoFit != null) {
+					int x = AutoFit.Bounds.X - AutoFit.Margin[0];
+					int y = AutoFit.Bounds.Y - AutoFit.Margin[1];
+					return new Rectangle(x, y, sz.Width, sz.Height);
+				}
+				return new Rectangle(Bounds.X, Bounds.Y, sz.Width, sz.Height);
 			}
+		}
+
+		public void RenderAll(Graphics ctx, float dt) {
+			if (AutoFit != null) {
+				AutoFit.Render(ctx, 0.0f);
+				Bounds = CorrectBounds;
+			}
+
+			Render(ctx, dt);
 
 			Animation ain = InAnimation, aout = OutAnimation;
-			if (ain != null && ain.State != AnimationState.Finished && ain.State != AnimationState.Idle) {
-				aout?.Reset();
-				ain.Apply(ref props);
-				ain.Update(dt);
-			} else if (aout != null && aout.State != AnimationState.Finished && aout.State != AnimationState.Idle) {
-				ain?.Reset();
-				aout.Apply(ref props);
-				aout.Update(dt);
-			}
 
-			if (Clipper != null) {
-				GraphicsPath gp;
-				if (Clipper is RectangleElement) {
-					var c = Clipper as RectangleElement;
-					gp = c.GetClipPath(ctx, Rectangle.Empty);
-				} else {
-					gp = new GraphicsPath();
-					gp.AddRectangle(Clipper.Bounds);
+			switch (state) {
+				case ElementState.Showing: {
+					ain?.Apply(ref props);
+					ain?.Update(dt);
+
+					if (ain == null || (ain != null && ain.State == AnimationState.Finished)) {
+						state = ElementState.Shown;
+					}
 				}
-				ctx.Clip = new Region(gp);
+				break;
+				case ElementState.Hiding: {
+					aout?.Apply(ref props);
+					aout?.Update(dt);
+
+					if (aout == null || (aout != null && aout.State == AnimationState.Finished)) {
+						state = ElementState.Hidden;
+					}
+				}
+				break;
 			}
-			Render(ctx, dt);
-			ctx.Restore(state);
 		}
 	}
 
@@ -365,6 +418,7 @@ namespace titler.Titler {
 				}
 				break;
 			}
+
 			props.Bounds = b;
 		}
 	}
@@ -472,7 +526,7 @@ namespace titler.Titler {
 
 			ctx.Clip = clip;
 			ctx.FillRoundedRectangle(sb, Bounds, BorderRadius, EdgeFilter);
-
+			ctx.ResetClip();
 			ctx.Restore(state);
 		}
 
@@ -539,6 +593,9 @@ namespace titler.Titler {
 		}
 
 		public override void Render(Graphics ctx, float dt) {
+			preferredSize = ctx.MeasureString(Text, Font).ToSize();
+			preferredSize.Width += 10;
+
 			var state = ctx.Save();
 
 			var sf = new StringFormat();
@@ -575,7 +632,6 @@ namespace titler.Titler {
 				case Alignment.Far: sf.LineAlignment = StringAlignment.Far; break;
 			}
 
-
 			var sz = GetPreferredSize();
 
 			var clip = new Region(new Rectangle(Bounds.Location, sz));
@@ -592,8 +648,6 @@ namespace titler.Titler {
 				if (Clipper.AnimationPlaying)
 					clip.Intersect(Clipper.GetClipPath(ctx, Clipper.AnimatableProperties.Bounds));
 			}
-
-			preferredSize = ctx.MeasureString(Text, Font).ToSize();
 
 			ctx.Clip = clip;
 
@@ -622,7 +676,7 @@ namespace titler.Titler {
 
 			//	y += line.Height;
 			//}
-
+			ctx.ResetClip();
 			ctx.Restore(state);
 		}
 
@@ -758,7 +812,7 @@ namespace titler.Titler {
 				ctx.DrawImage(Image, new Rectangle(Bounds.X, Bounds.Y, Bounds.Width, Bounds.Height), Source.X, Source.Y, Source.Width, Source.Height, GraphicsUnit.Pixel, attr);
 			else
 				ctx.FillRectangle(Brushes.Magenta, Bounds);
-
+			ctx.ResetClip();
 			ctx.Restore(state);
 		}
 	}
